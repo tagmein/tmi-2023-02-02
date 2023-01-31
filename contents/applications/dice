@@ -1,0 +1,31 @@
+<h1>Roll a dice</h1>
+
+<input id="sides" placeholder="# of sides" />
+<button id="roll" >Roll</button>
+<div id="outcome">&nbsp;</div>
+
+<style>
+ #outcome {
+  background-color: #e8e8e8;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-weight: bold;
+  color: black;
+  display: inline-block;
+  width: 64px;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: inset -4px -4px 4px 0 #00000079, inset 4px 4px 4px 0 #fff;
+  border-radius: 8px;
+ }
+</style>
+
+<script>
+  const sides = document.getElementById('sides')
+  const roll = document.getElementById('roll')
+  const outcome = document.getElementById('outcome')
+
+  roll.addEventListener('click', () => {
+    outcome.innerHTML = Math.floor((Math.random() * sides.value)) + 1
+  })
+</script>

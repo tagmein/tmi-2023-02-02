@@ -320,7 +320,7 @@ const TOOLBAR = `<div class="toolbar">
 
 const linkifyScript = `<script>
  function linkify(content) {
-  return content.replace(/\\#([a-z0-9/.]+)/g, function (_, link) {
+  return content.replace(/\\#\#([a-z0-9/.]+)/g, function (_, link) {
    const href = {
     mode: ${JSON.stringify(mode)},
     source: ${JSON.stringify(source)},
