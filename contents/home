@@ -1,0 +1,490 @@
+// Use extreme caution when editing this file, you could get locked out of Tag Me In<!--
+const { state, source } = data
+
+// console.log({ state, source })
+
+const { path = '/', mode = 'view' } = state
+
+function href(updates) {
+ return `#${encodeURIComponent(JSON.stringify({ ...state, ...updates }))}`
+}
+
+const segments = path === '/' ? [] : path.replace(/^\//, '').split('/')
+
+const { files, folders, contents, isFile } = await TMI.list(path)
+
+const dialogScript = `<script>
+ async function dialog(contents, input, existingValue) {
+  const dialogScreenElement = document.createElement('div')
+  dialogScreenElement.classList.add('screen')
+  const dialogElement = document.createElement('div')
+  dialogScreenElement.appendChild(dialogElement)
+  dialogElement.classList.add('dialog')
+  const dialogContents = document.createElement('blockquote')
+  dialogContents.innerText = contents
+  dialogElement.appendChild(dialogContents)
+  let inputElement
+  if (input) {
+   inputElement = document.createElement('input')
+   dialogElement.appendChild(inputElement)
+   inputElement.setAttribute('placeholder', input)
+   if (typeof existingValue === 'string') {
+    inputElement.setAttribute('value', existingValue)
+   }
+  }
+  const dialogActions = document.createElement('div')
+  dialogActions.classList.add('actions')
+  const dialogYesButton = document.createElement('button')
+  const dialogNoButton = document.createElement('button')
+  dialogYesButton.innerText = 'Yes'
+  dialogNoButton.innerText = 'No'
+  dialogActions.appendChild(dialogNoButton)
+  dialogActions.appendChild(dialogYesButton)
+  dialogElement.appendChild(dialogActions)
+  document.body.appendChild(dialogScreenElement)
+  inputElement?.focus()
+  inputElement?.select()
+  return new Promise(function (resolve, reject) {
+   function yes() {
+    document.body.removeChild(dialogScreenElement)
+    resolve(inputElement?.value)
+   }
+   function no() {
+    document.body.removeChild(dialogScreenElement)
+    reject()
+   }
+   dialogYesButton.addEventListener('click', yes)
+   dialogNoButton.addEventListener('click', no)
+   inputElement?.addEventListener?.('keydown', function ({ key }) {
+    ({ Escape: no, Enter: yes })[key]?.()
+   })
+  })
+ }
+</script>`
+
+const messageScript = `<script>
+ async function message(contents) {
+  const messageScreenElement = document.createElement('div')
+  messageScreenElement.classList.add('screen')
+  const messageElement = document.createElement('div')
+  messageScreenElement.appendChild(messageElement)
+  messageElement.classList.add('dialog')
+  const messageContents = document.createElement('blockquote')
+  messageContents.innerText = contents
+  messageElement.appendChild(messageContents)
+  const messageActions = document.createElement('div')
+  messageActions.classList.add('actions')
+  const messageOkButton = document.createElement('button')
+  messageOkButton.innerText = 'Acknowledged'
+  messageActions.appendChild(messageOkButton)
+  messageElement.appendChild(messageActions)
+  document.body.appendChild(messageScreenElement)
+  return new Promise(function (resolve) {
+   function ok() {
+    document.body.removeChild(messageScreenElement)
+    resolve()
+   }
+   messageOkButton.addEventListener('click', ok)
+  })
+ }
+</script>`
+
+const saveFileScript = `<script>
+ async function saveFile() {
+  try {
+   await TMI.saveFile(
+    [ ...${JSON.stringify(segments)} ],
+    document.getElementById('editor').value
+   )
+   await message(\`Saved file '${segments[segments.length - 1]}'\`)
+  }
+  catch (e) {
+   console.log(e)
+   await message(e.message)
+  }
+ }
+</script>`
+
+const tmiClientScript = `<script>
+ ${TMI.clientSource}
+</script>`
+
+const CSS = `<style>
+ .container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  user-select: none;
+ }
+ .toolbar {
+  height: 40px;
+  background-color: #202020;
+  border-bottom: 1px solid #484848;
+  display: flex;
+  flex-direction: row;
+ }
+ .toolbar span {
+  padding: 0 10px;
+  line-height: 40px;
+ }
+ .contents {
+  flex-grow: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+ }
+ body a, body button {
+  display: inline-block;
+  padding: 0 10px;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  background-color: transparent;
+  min-width: 40px;
+  text-align: center;
+  border: none;
+  box-sizing: border-box;
+ }
+ button.new {
+  color: #0f0;
+ }
+ a:hover, button:hover {
+  background-color: #ffffff28;
+ }
+ a[disabled="true"], button:disabled {
+  background-color: #ffffff60;
+  color: #d0d0d0;
+  pointer-events: none;
+ }
+ h2 {
+  border-bottom: 1px solid #484848;
+  margin: 0;
+  line-height: 30px;
+  height: 30px;
+  font-size: 14px;
+  padding: 0 10px;
+  background-color: #202020;
+ }
+ .folders {
+  border-bottom: 1px solid #484848;
+ }
+ .segment:before {
+  position: absolute;
+  content: '/';
+  left: -5px;
+  top: 0;
+  display: block;
+ }
+ .viewer, .editor, iframe {
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  border: none;
+ }
+ .editor {
+  resize: none;
+  padding: 10px;
+ }
+ .spacer {
+  flex-grow: 1;
+ }
+ .listing {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  overflow: hidden;
+ }
+ .screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ffffff79;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 10000;
+ }
+ .dialog {
+  width: 50%;
+  min-width: 240px;
+  max-width: 480px;
+  border: 1px #ffffff79;
+  background-color: #202020;
+  box-shadow: 0 0 40px #00000079;
+  border-radius: 10px;
+  overflow: hidden;
+ }
+ .dialog blockquote {
+  padding: 10px;
+  margin: 0;
+  text-align: center;
+ }
+ .dialog input {
+  padding: 10px;
+  width: 100%;
+ }
+ .actions {
+  display: flex;
+  flex-direction: row;
+  border-top: 1px solid #ffffff79;
+ }
+ .actions button {
+  flex-grow: 1;
+  width: 50%;
+ }
+ .actions button:first-of-type {
+  border-bottom-left-radius: 10px;
+ }
+ .actions button:last-of-type {
+  border-bottom-right-radius: 10px;
+ }
+ .actions button + button {
+  border-left: 1px solid #ffffff79;
+ }
+ .letter {
+  display: inline-block;
+  text-transform: uppercase;
+  background-color: #fff;
+  color: #000;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  position: relative;
+  line-height: 40px;
+  transform: scale(0.5);
+  font-size: 30px;
+  font-weight: bold;
+  border-radius: 5px;
+  left: 10px;
+ }
+ #client-key {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #ffffff79;
+  border-top-left-radius: 5px;
+  background-color: #202020;
+  padding: 0 5px;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 10000;
+ }
+ #client-key:hover {
+  width: auto;
+ }
+ *:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 4px #ffffff79;
+ }
+</style>`
+
+const TOOLBAR = `<div class="toolbar">
+ <span title="The current script">${source}</span>
+ <a
+  class="folder segment"
+  target="_top"
+  title="Visit folder"
+  href="${href({ path: '/' })}"
+ >root</a>
+ ${segments.map(function (segment, i) {
+  return `<a
+   class="folder segment"
+   target="_top"
+   title="Visit folder"
+   href="${href({ path: '/' + segments.slice(0, i + 1).join('/') })}"
+  >${segment}</a>`
+ }).join('')}
+</div>`
+
+const linkifyScript = `<script>
+ function linkify(content) {
+  return content.replace(/\\#([a-z0-9/.]+)/g, function (_, link) {
+   const href = {
+    mode: ${JSON.stringify(mode)},
+    source: ${JSON.stringify(source)},
+    path: [...${JSON.stringify(segments.slice(0, segments.length - 1))}, link].join('/')
+   }
+   return \`<a
+    target="_top"
+    href="#\${encodeURIComponent(JSON.stringify(href))}"
+   >\${link}</a>\`
+  })
+ }
+</script>`
+
+const clientKeyScript = `<script>
+ document.getElementById('client-key').innerText = ${JSON.stringify(TMI.clientKey)}
+</script>`
+
+if (isFile) {
+ const content = (function () {
+  switch (mode) {
+   case 'edit':
+    return `
+  <div class="contents"><textarea class="editor" id="editor"></textarea></div>
+  <script>
+   document.getElementById('editor').value = decodeURIComponent(${
+    JSON.stringify(encodeURIComponent(contents))
+   })
+  </script>`
+   case 'view':
+    return `
+ <div class="contents" id="viewer"></div>
+ <script>
+  const viewFrame = document.createElement('iframe')
+  document.getElementById('viewer').appendChild(viewFrame)
+  viewFrame.contentDocument.open()
+  viewFrame.contentDocument.write(\`<head>
+ <meta charset="utf-8" />
+ <link rel="stylesheet" type="text/css" href="/main.css" />
+ <style>
+  body {
+   padding: 10px;
+   border-top: 1px solid transparent;
+  }
+ </style>
+</head>
+<body>\${linkify(decodeURIComponent(${
+   JSON.stringify(encodeURIComponent(contents))
+  }))}</body>\`)
+  viewFrame.contentDocument.close()
+ </script>`
+   default:
+    return '<h1>Error</h1>'
+  }
+ })()
+ const tools = (function () {
+  switch (mode) {
+   case 'edit':
+    return `
+ <button onclick="saveFile()">Save</button>
+    `
+   case 'view':
+    return ``
+   default:
+    return '<span>Error</span>'
+  }
+ })()
+ return `
+ ${CSS}
+ ${linkifyScript}
+ ${tmiClientScript}
+ ${dialogScript}
+ ${messageScript}
+ ${saveFileScript}
+ <div id="client-key" title="Client key"></div>
+ ${clientKeyScript}
+ <div class="container">
+  ${TOOLBAR}
+  <div class="toolbar">
+   <a target="_top" disabled="${mode === 'view'}" href="${href({ mode: 'view' })}">View</a>
+   <a target="_top" disabled="${mode === 'edit'}" href="${href({ mode: 'edit' })}">Edit</a>
+   <span class="spacer"></span>
+   ${tools}
+  </div>
+  ${content}
+ </div>
+`
+}
+
+const newFileScript = `<script>
+ async function newFile() {
+  const fileName = await dialog('Create a new file', 'file name')
+  if (fileName?.length > 0) {
+   await TMI.createFile([ ...${JSON.stringify(segments)}, fileName ])
+   await message(\`Created file '\${fileName}', will now reload\`)
+   window.top.location.reload()
+  }
+  else {
+   await message('No file name provided, did not create file')
+  }
+ }
+</script>`
+
+const newFolderScript = `<script>
+ async function newFolder() {
+  const folderName = await dialog('Create a new folder', 'folder name')
+  if (folderName?.length > 0) {
+   await TMI.createFolder([ ...${JSON.stringify(segments)}, folderName ])
+   await message(\`Created folder '\${folderName}', will now reload\`)
+   window.top.location.reload()
+  }
+  else {
+   await message('No folder name provided, did not create folder')
+  }
+ }
+</script>`
+
+const firstLetters = {}
+
+function firstLetter(scope, name) {
+ const letter = name[0]
+ const key = `${scope}:${letter}`
+ if (!(key in firstLetters)) {
+  firstLetters[key] = true
+  return `<span class="letter">${letter}</span>`
+ }
+ return ''
+}
+
+return `
+ ${CSS}
+ ${tmiClientScript}
+ ${dialogScript}
+ ${messageScript}
+ ${newFileScript}
+ ${newFolderScript}
+ <div id="client-key" title="Client key"></div>
+ ${clientKeyScript}
+ <div class="container">
+  ${TOOLBAR}
+  <div class="contents">
+   <div class="folders">
+    <h2>Folders</h2>
+    <div class="listing">${
+     folders.map(function (f) {
+      return `${firstLetter('folder', f)}<a
+       class="folder"
+       target="_top"
+       title="Visit folder"
+       href="${href({ path: ['', ...segments, f].join('/') })}"
+      >${f}</a>`
+     }).join('')}
+     <button class="new" title="New folder" onclick="newFolder()">+</button>
+    </div>
+   </div>
+   <div class="files">
+    <h2>Files</h2>
+    <div class="listing">${
+     files.map(function (f) {
+      return `${firstLetter('file', f)}<a
+       class="file"
+       target="_top"
+       title="Visit file"
+       href="${href({ path: ['', ...segments, f].join('/') })}"
+      >${f}</a>`
+     }).join('')}
+     <button class="new" title="New file" onclick="newFile()">+</button>
+    </div>
+   </div>
+  </div>
+ </div>
+`
