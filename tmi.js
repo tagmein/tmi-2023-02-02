@@ -61,7 +61,7 @@ setImmediate(function () {
    }
   }
  }
- 
+
  async function createFile(requestBody) {
   const filePath = path.join(basePath, requestBody.path)
   if (FILE.is(filePath)) {
@@ -277,13 +277,14 @@ const STATIC = {
  '/': {
   contentType: 'text/html; charset=utf-8',
   content: `<!doctype html>
+<html class="tagmein">
 <head>
  <title>Tag Me In</title>
  <meta charset="utf-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  <link rel="stylesheet" type="text/css" href="/main.css" />
 </head>
-<body>
+<body class="tagmein">
  <div id="main"><h2>Tag Me In</h2><p>Loading</p></div>
  <script src="/main.js"></script>
  <noscript>Error: JavaScript is disabled, which Tag Me In requires to run</noscript>
@@ -291,13 +292,13 @@ const STATIC = {
  },
  '/main.css': {
   contentType: 'text/css; charset=utf-8',
-  content: `html, body {
+  content: `html.tagmein, body.tagmein {
  height: 100vh;
  margin: 0;
  overflow: hidden;
 }
 h1, h2, h3, h4, h5, h6, p {
- margin: 10px 0;
+ margin: 20px 0;
 }
 h1:first-child, h2:first-child, h3:first-child, h4:first-child, h5:first-child, h6:first-child, p:first-child {
  margin-top: 0;

@@ -1,8 +1,41 @@
+<style>
+ h1 {
+  font-size: 72px;
+  padding: 40px 0 0;
+ }
+ body {
+  text-align: center;
+ }
+ blockquote {
+  font-style: italic;
+  font-size: 32px;
+  margin: 40px;
+  padding: 20px;
+ }
+ blockquote em {
+  font-style: normal;
+ }
+ section {
+  background-color: #212121;
+  border-radius: 10px;
+  padding: 60px 80px;
+  max-width: 480px;
+  width: 80%;
+  margin: 40px auto;
+ }
+</style>
+
 <h1>Tag Me In</h1>
-<h3>Founded 2018</h3>
+<blockquote>&ldquo;It is <em>my</em> job to improve the world&rdquo;</blockquote>
 
-<p>Tag Me In is a slow, collaboratively edited internet dictionary of software engineering and related concepts.</p>
+<section>
+ <h3>Founded 2018</h3>
 
-<p>This site is curated by <a target="_blank" href="https://nateferrero.com">Nate Ferrero</a>, and everyone is welcome to contribute. Email nate@tagme.in and ask about becoming a contributor today.</p>
+ <p>Tag Me In is a slow, collaboratively edited internet dictionary of software engineering and related concepts.</p>
 
-<p>If you'd like to run your own instance, the server is available on <a target="_blank" href="https://github.com/tagmein/tagme.in/blob/main/tmi.js">GitHub</a>.</p>
+ <p>This site is curated by <a target="_blank" href="https://nateferrero.com">Nate Ferrero</a>, and everyone is welcome to contribute. Email nate@tagme.in and ask about becoming a contributor today.</p>
+
+ <p>If you'd like to run your own instance, the server script "tmi.js" is available on <a target="_blank" href="https://github.com/tagmein/tagme.in/blob/main/tmi.js">GitHub</a>.</p>
+
+ <p>Thank you for being a part of this community. Your friend, Nate.</p>
+</section>
