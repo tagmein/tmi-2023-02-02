@@ -477,7 +477,7 @@ const clientKeyStorage = 'client-key'
 
 function randomClientKey() {
  return Array(CLIENT_KEY_LENGTH).fill(null).map(function () {
-  return Math.floor(Math.random() * 1e6).toString(36)[3]
+  return Math.floor(Math.random() * 1e6).toString(36)[0]
  }).join('')
 }
 

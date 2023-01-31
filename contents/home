@@ -125,7 +125,10 @@ const CSS = `<style>
   background-color: #202020;
   border-bottom: 1px solid #484848;
   display: flex;
+  flex-shrink: 0;
   flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
  }
  .toolbar span {
   padding: 0 10px;
@@ -152,6 +155,7 @@ const CSS = `<style>
   text-align: center;
   border: none;
   box-sizing: border-box;
+  flex-shrink: 0;
  }
  button.new {
   color: #0f0;
