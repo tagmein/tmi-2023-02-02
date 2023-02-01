@@ -1,0 +1,147 @@
+<div id="todoList"></div>
+<style>
+ .todoItem {
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+ }
+ .todoItem + .todoItem {
+  border-top: 2px solid #797979;
+ }
+ .todoItem input[type="checkbox"] {
+  margin: 10px 10px 10px 0;
+  height: 30px;
+  width: 30px;
+ }
+ .todoItem input.title {
+  width: 100%;
+  flex-grow: 1;
+ }
+ .todoItem button {
+  width: 40px;
+  text-align: center;
+  margin-left: 10px;
+  cursor: pointer;
+ }
+ .todoItem button:hover {
+  background-color: #404040;
+ }
+ .todoItem span {
+  font-size: 14px;
+  max-width: 100px;
+  padding: 0 10px;
+ }
+</style>
+<script>
+ /*
+  Todo item:
+   id: string
+   title: string
+   done: boolean
+   created: timestamp (number)
+   edited: timestamp (number)
+ */
+ const app = document.getElementById('todoList')
+ const baseFolder = ['.private', TMI.clientKey, 'todo']
+
+ function renderTodoItem(data) {
+  return `
+   <div class="todoItem">
+    <input
+     onchange="setTodoDone('${data.id}', ${data.done ? false : true})"
+     type="checkbox"
+     ${data.done ? 'checked' : ''}
+    />
+    <input
+     class="title"
+     type="text"
+     value=${JSON.stringify(data.title)}
+     onchange="editTodo('${data.id}', event)"
+    />
+    <span title="Created at">${new Date(data.created).toLocaleString().replace(',', '')}</span>
+    <span title="Edited at">${new Date(data.edited).toLocaleString().replace(',', '')}</span>
+    <button onclick="deleteTodo('${data.id}')">🗑</button>
+   </div>
+  `
+ }
+
+ let items = []
+
+ async function saveItems() {
+  await TMI.saveFile([...baseFolder, 'list'], JSON.stringify(items))
+ }
+
+ async function editTodo(id, event) {
+  const title = event.target.value
+  items = items.map(x => {
+   return x.id === id
+    ? { ...x, title, edited: Date.now() }
+    : x
+  })
+  await saveItems()
+  await renderApp()
+ }
+
+ async function setTodoDone(id, done) {
+  items = items.map(x => {
+   return x.id === id
+    ? { ...x, done, edited: Date.now() }
+    : x
+  })
+  await saveItems()
+  await renderApp()
+ }
+
+ async function deleteTodo(id) {
+  items = items.filter(x => x.id !== id)
+  await saveItems()
+  await renderApp()
+ }
+
+ async function addTodo() {
+  const title = document.getElementById('new-todo-title').value
+  const created = Date.now()
+  items.push({
+   id: Math.floor(Math.random() * 1e9).toString(36),
+   title,
+   done: false,
+   created,
+   edited: created
+  })
+  await saveItems()
+  await renderApp()
+ }
+
+ function addTodoKeyDown({ key }) {
+  if (key === 'Enter') {
+   addTodo()
+  }
+ }
+
+ async function renderApp() {
+  const { contents } = await TMI.list([...baseFolder, 'list'])
+  items = contents?.length > 2 ? JSON.parse(contents) : []
+  app.innerHTML = `
+   <h3>To do list</h3>
+   ${items.map(renderTodoItem).join('')}
+   <div class="todoItem">
+    <input type="checkbox" disabled />
+    <input
+     id="new-todo-title"
+     class="title"
+     placeholder="new item"
+     onkeydown="addTodoKeyDown(event)"
+     class="addNewTodo"
+    />
+    <button onclick="addTodo()">➕</button>
+   </div>
+  `
+ }
+
+ async function main() {
+  await TMI.createFolder(baseFolder)
+  await renderApp()
+ }
+
+ main()
+</script>

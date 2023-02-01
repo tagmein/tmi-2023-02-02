@@ -1,0 +1,174 @@
+<div id="connect">
+  <input placeholder="Enter API hostname" id="hostname" />
+  <input placeholder="Paste invitation link" id="invitation" />
+  <button id="connect">Connect</button>
+</div>
+<div id="status">Not connected</div>
+<div id="notes"></div>
+
+<style>
+  #status, #notes {
+    margin: 1rem 0;
+  }
+</style>
+
+<script>
+  async function main() {
+
+  const baseFolder = ['.private', TMI.clientKey, 'incept']
+  await TMI.createFolder(baseFolder)
+  const { contents } = await TMI.list([...baseFolder, 'deviceToken'])
+  
+  const newRandomKey = () => Array.from(Array(10)).reduce(a => a + Math.random().toString(36).substring(2, 15), '')
+
+  let deviceToken
+  if (contents) {
+    deviceToken = contents
+  } else {
+    deviceToken = "tagmein-" + newRandomKey()
+    await TMI.saveFile([...baseFolder, 'deviceToken'], deviceToken)
+  }
+
+  const state = { deviceToken, invitation: null }
+  const invitation = document.getElementById('invitation')
+  const hostname = document.getElementById('hostname')
+  const connect = document.getElementById('connect')
+  const status = document.getElementById('status')
+  const notes = document.getElementById('notes')
+
+  const { contents: savedHost } = await TMI.list([...baseFolder, 'host'])
+
+  if (savedHost) {
+    hostname.value = savedHost
+  }
+
+  const saveNotes = async (notes) => {
+    await TMI.saveFile([...baseFolder, 'notes'], JSON.stringify(notes))
+  }
+
+  const saveNotesFromSync = async (events, partialUpdate) => {
+    events.forEach(event => {
+      if (event[0] === 'sync') {
+        if (partialUpdate) {
+          if (!state.notes) {
+            console.error('Cannot perform partial update without state.notes loaded.')
+          } else {
+            let noteUpdates = event[1].notes
+            noteUpdates.forEach(update => {
+              const note = state.notes.find(x => x.id === update.id)
+console.log(state, note)
+
+              if (note) {
+                Object.assign(note, update)
+              } else {
+                console.log('Recieved an update for a note I don\'t have', update)
+              }
+            })
+            saveNotes(state.notes)
+          }
+        } else {
+          state.notes = event[1].notes
+          saveNotes(state.notes)
+        }
+      }
+    })
+  }
+
+  const loadNotes = (host) => {
+    const localState = [['state', {notes: []}]] // notes = [['id', 'revision'], ...]
+    const request = new XMLHttpRequest()
+    request.open('post', 'https://' + host + '/http', true)
+    request.setRequestHeader('Authorization', 'Bearer ' + state.deviceToken)
+    request.setRequestHeader('Accept', 'application/json')
+    request.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
+    request.onreadystatechange = () => {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          notes.innerHTML = 'Notes are syncing over websocket, <a href="https://tagme.in/#{%220%22%3A%22%22%2C%22source%22%3A%22%2Fapplications%2Fview%2Fnote%22%2C%22mode%22%3A%22view%22}" target="_blank">open notes</a>'
+          saveNotesFromSync(JSON.parse(request.responseText))
+        } else {
+          notes.innerText = 'Error loading notes: ' + request.statusText
+        }
+      }
+    }
+    request.send(JSON.stringify(localState))
+  }
+
+  const saveInvitation = async (invitation) => {
+    await TMI.saveFile([...baseFolder, 'invitation'], invitation)
+  }
+
+  const renderInvitation = () => {
+    status.innerHTML = 'Connected as <b>' + state.invitation.name + '</b>'
+  }
+
+  const ws = (host) => {
+    const websocket = new WebSocket('wss:/' + host + '/ws')
+    websocket.onopen = () => {
+      const event = [['identify', {device: state.deviceToken}]]
+      websocket.send(JSON.stringify(event))
+    }
+    websocket.onmessage = message => {
+      const events = JSON.parse(message.data)
+      events.forEach(event => {
+        if (event[0] === 'identify') {
+          
+          state.invitation = event[1].invitation
+          renderInvitation()
+
+          loadNotes(host)
+        } else if (event[0] === 'sync') {
+          saveNotesFromSync([event], true)
+        }
+      })
+    }
+  }
+
+  const saveHost = async (host) => {
+    await TMI.saveFile([...baseFolder, 'host'], host)
+  }
+
+  const connectInvitation = (host, link) => {
+    saveHost(host)
+
+    const request = new XMLHttpRequest()
+    request.open('post', 'https://' + host + '/me/invitation', true)
+    request.setRequestHeader('Authorization', 'Bearer ' + state.deviceToken)
+    request.setRequestHeader('Accept', 'application/json')
+    request.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
+    request.onreadystatechange = () => {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          state.invitation = JSON.parse(request.responseText)
+          saveInvitation(state.invitation)
+          renderInvitation()
+          ws(host)
+        } else {
+          status.innerText = 'Error: ' + request.statusText
+        }
+      }
+    }
+    const linkUrl = link.split('/')
+    request.send(JSON.stringify({ token: linkUrl[linkUrl.length - 1] }))
+  }
+
+  connect.addEventListener('click', () => {
+    if (hostname.value && invitation.value) {
+      connectInvitation(hostname.value, invitation.value)
+    }
+  })
+
+  if (savedHost && deviceToken) {
+    ws(savedHost)
+  }
+
+  const { contents: savedInvitation } = await TMI.list([...baseFolder, 'invitation'])
+
+  if (savedInvitation) {
+    state.invitiation = savedInvitiation
+    renderInvitation()
+  }
+
+  }
+  main()
+</script>

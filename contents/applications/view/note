@@ -1,0 +1,46 @@
+async function load() {
+  const baseFolder = ['.private', TMI.clientKey, 'incept']
+  await TMI.createFolder(baseFolder)
+  const { contents } = await TMI.list([...baseFolder, 'notes'])
+  return JSON.parse(contents)
+}
+
+// todo, find a good root note, convert to intented hierarchy
+
+const noteHtml = (note) => {
+  return `
+<div class="note" style="background-color:${note.color};" id="note-${note.id}">
+  <label>
+    <input type="checkbox" ${note.checked ? 'checked="true"' : ''} />
+    <span>${note.name}</span>
+  </label>
+</div>
+  `
+}
+
+const notes = await load()
+const sectionHTML = notes.filter(note => !!note.name).map(note => noteHtml(note)).join('')
+
+return `
+<script>
+
+  // todo: how to access TMI here and reload (dynaically)
+
+</script>
+<style>
+section {
+  width: 50vw;
+  margin: auto;
+}
+
+.note {
+  margin-top: 1rem;
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: white;
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.25), transparent);
+  color: black;
+}
+</style>
+<section id="notes">${sectionHTML}</section>
+`
