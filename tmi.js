@@ -385,8 +385,8 @@ const WORKER_TIMEOUT = 2500//ms
 async function runScript(source, payload) {
  const tmiClientSource = \`;(self ?? this ?? window).TMI = {
  clientKey: \${JSON.stringify(payload.clientKey)},
- async list(nodePath) {
-  const listResponse = await fetch(\\\`\${payload.origin}/list?path=\\\${encodeURIComponent(nodePath)}\\\`, {
+ async list(path) {
+  const listResponse = await fetch(\\\`\${payload.origin}/list?path=\\\${encodeURIComponent(path.join('/'))}\\\`, {
    headers: {
     'X-Client-Key': TMI.clientKey
    }

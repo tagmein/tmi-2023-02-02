@@ -11,7 +11,7 @@ function href(updates) {
 
 const segments = path === '/' ? [] : path.replace(/^\//, '').split('/')
 
-const { files, folders, contents, isFile } = await TMI.list(path)
+const { files, folders, contents, isFile } = await TMI.list(segments)
 
 const dialogScript = `<script>
  async function dialog(contents, input, existingValue) {
