@@ -107,10 +107,9 @@ setImmediate(function () {
   if (FILE.is(folderPath)) {
    return { statusCode: 400, content: `file "${folderPath}" exists` }
   }
-  if (DIRECTORY.is(folderPath)) {
-   return { statusCode: 400, content: `folder "${folderPath}" exists` }
+  if (!DIRECTORY.is(folderPath)) {
+   DIRECTORY.create(folderPath)
   }
-  DIRECTORY.create(folderPath)
   return { statusCode: 201 }
  }
 
@@ -118,9 +117,6 @@ setImmediate(function () {
   const filePath = path.join(basePath, requestBody.path)
   if (DIRECTORY.is(filePath)) {
    return { statusCode: 400, content: `folder "${filePath}" exists` }
-  }
-  if (!FILE.is(filePath)) {
-   return { statusCode: 400, content: `file "${filePath}" does not exist` }
   }
   FILE.write(filePath, requestBody.content)
   return { statusCode: 201 }

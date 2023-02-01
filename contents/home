@@ -86,6 +86,7 @@ const messageScript = `<script>
    }
    messageOkButton.addEventListener('click', ok)
   })
+  messageOkButton.focus()
  }
 </script>`
 
