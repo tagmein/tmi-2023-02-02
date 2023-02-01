@@ -66,7 +66,7 @@ setImmediate(function () {
     console.log(`Created private directory for client ${myDirectoryPath}`)
    }
   }
-  if (atPath === '/' + privateDirectory) {
+  if (atPath === privateDirectory) {
    return {
     files: [],
     folders: [ clientKey ],
