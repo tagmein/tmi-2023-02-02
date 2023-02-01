@@ -1,0 +1,7 @@
+<script>
+ async function main() {
+  const { files } = await TMI.list(`.private/${TMI.clientKey}`)
+  console.log(files)
+ }
+ main()
+</script>

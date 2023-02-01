@@ -29,6 +29,8 @@ const MAX_REQUEST_BODY_SIZE = 1024 * 64 // 64kb
 const [http, fs, path, qs] = 'http fs path querystring'
  .split(' ').map(require)
 
+const privateDirectory = '.private'
+
 setImmediate(function () {
  console.log(`=== Tag Me In === ${__dirname}`)
  const port = PORT.normalize(process.env.PORT, 3000)
@@ -44,7 +46,33 @@ setImmediate(function () {
   console.log(`Created content directory ${basePath}`)
  }
 
- async function list(atPath) {
+ const privateBasePath = path.join(basePath, privateDirectory)
+
+ if (DIRECTORY.is(privateBasePath)) {
+  console.log(`Found private directory ${privateBasePath}`)
+ }
+ else {
+  DIRECTORY.create(privateBasePath)
+  console.log(`Created private directory ${privateBasePath}`)
+ }
+
+ async function list(atPath, requestHeaders) {
+  const clientKey = requestHeaders['x-client-key']
+  const myDirectory = `${privateDirectory}/${clientKey}`
+  const myDirectoryPath = path.join(basePath, myDirectory)
+  if (clientKey?.length === 40 && atPath.startsWith(myDirectory)) {
+   if (!DIRECTORY.is(myDirectoryPath)) {
+    DIRECTORY.create(myDirectoryPath)
+    console.log(`Created private directory for client ${myDirectoryPath}`)
+   }
+  }
+  if (atPath === '/' + privateDirectory) {
+   return {
+    files: [],
+    folders: [ clientKey ],
+    isFile: false
+   }
+  }
   const sourcePath = path.join(basePath, atPath)
   if (DIRECTORY.is(sourcePath)) {
    const items = DIRECTORY.list(sourcePath)
@@ -118,7 +146,7 @@ setImmediate(function () {
    return {
     statusCode: 200,
     contentType: 'text/plain; charset=utf-8',
-    content: JSON.stringify(await list(requestParams.path))
+    content: JSON.stringify(await list(requestParams.path, requestHeaders))
    }
   }
   else if (requestMethod === 'GET' && requestPath.startsWith('/source/')) {
@@ -200,9 +228,13 @@ const DIRECTORY = {
   fs.mkdirSync(directoryPath)
  },
  list(testPath) {
+  if (testPath.endsWith(privateDirectory)) {
+   return []
+  }
   return fs.readdirSync(testPath, {
    withFileTypes: true,
   })
+  .filter(x => x.name !== privateDirectory)
  },
  is(testPath) {
   return fs.existsSync(testPath) && fs.lstatSync(testPath).isDirectory()
@@ -495,7 +527,12 @@ async function render(state) {
   const scriptResponse = await fetch(\`/source/\${source}\`)
   if (scriptResponse.ok) {
    const script = await scriptResponse.text()
-   const output = await runScript(script, { state, source, clientKey, origin: location.origin })
+   const output = await runScript(script, {
+    state,
+    source,
+    clientKey,
+    origin: location.origin
+   })
    const outputFrame = document.createElement('iframe')
    mainFrame.innerHTML = ''
    mainFrame.appendChild(outputFrame)
@@ -517,3 +554,4 @@ async function render(state) {
 }`
  }
 }
+

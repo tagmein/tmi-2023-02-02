@@ -365,10 +365,15 @@ if (isFile) {
    border-top: 1px solid transparent;
   }
  </style>
+ \${decodeURIComponent(${
+  JSON.stringify(encodeURIComponent(tmiClientScript))
+ })}
 </head>
-<body>\${linkify(decodeURIComponent(${
-   JSON.stringify(encodeURIComponent(contents))
-  }))}</body>\`)
+<body>
+ \${linkify(decodeURIComponent(${
+  JSON.stringify(encodeURIComponent(contents))
+ }))}
+</body>\`)
   viewFrame.contentDocument.close()
  </script>`
    default:
