@@ -56,7 +56,7 @@ setImmediate(function () {
   console.log(`Created private directory ${privateBasePath}`)
  }
 
- async function list(atPath, requestHeaders) {
+ async function ensurePrivateDirectory(atPath, requestHeaders) {
   const clientKey = requestHeaders['x-client-key']
   const myDirectory = `${privateDirectory}/${clientKey}`
   const myDirectoryPath = path.join(basePath, myDirectory)
@@ -66,6 +66,11 @@ setImmediate(function () {
     console.log(`Created private directory for client ${myDirectoryPath}`)
    }
   }
+  return clientKey
+ }
+
+ async function list(atPath, requestHeaders) {
+  const clientKey = await ensurePrivateDirectory(atPath, requestHeaders)
   if (atPath === privateDirectory) {
    return {
     files: [],
@@ -90,7 +95,8 @@ setImmediate(function () {
   }
  }
 
- async function createFile(requestBody) {
+ async function createFile(requestBody, requestHeaders) {
+  const clientKey = await ensurePrivateDirectory(requestBody.path, requestHeaders)
   const filePath = path.join(basePath, requestBody.path)
   if (FILE.is(filePath)) {
    return { statusCode: 400, content: `file "${filePath}" exists` }
@@ -102,7 +108,8 @@ setImmediate(function () {
   return { statusCode: 201 }
  }
 
- async function createFolder(requestBody) {
+ async function createFolder(requestBody, requestHeaders) {
+  const clientKey = await ensurePrivateDirectory(requestBody.path, requestHeaders)
   const folderPath = path.join(basePath, requestBody.path)
   if (FILE.is(folderPath)) {
    return { statusCode: 400, content: `file "${folderPath}" exists` }
@@ -113,7 +120,8 @@ setImmediate(function () {
   return { statusCode: 201 }
  }
 
- async function saveFile(requestBody) {
+ async function saveFile(requestBody, requestHeaders) {
+  const clientKey = await ensurePrivateDirectory(requestBody.path, requestHeaders)
   const filePath = path.join(basePath, requestBody.path)
   if (DIRECTORY.is(filePath)) {
    return { statusCode: 400, content: `folder "${filePath}" exists` }
@@ -164,11 +172,11 @@ setImmediate(function () {
    }
    switch (requestPath) {
     case '/create-file':
-     return createFile(requestBody)
+     return createFile(requestBody, requestHeaders)
     case '/create-folder':
-     return createFolder(requestBody)
+     return createFolder(requestBody, requestHeaders)
     case '/save-file':
-     return saveFile(requestBody)
+     return saveFile(requestBody, requestHeaders)
    }
   }
   else if (requestMethod === 'GET' && requestPath in STATIC) {
