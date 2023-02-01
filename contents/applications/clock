@@ -1,0 +1,21 @@
+<style>
+ body {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+ }
+ #clock {
+  font-size: 80px;
+  text-align: center;
+ }
+</style>
+<div id="clock">wait</div>
+<script>
+ const clock = document.getElementById('clock')
+ setInterval(() => {
+  clock.innerText = new Date().toLocaleString().replace(',', '')
+ }, 1000)
+</script>
