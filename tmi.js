@@ -485,7 +485,7 @@ self.onmessage = function ({ data }) {
 }
 
 function navigate(toState) {
- window.location.hash = encodeURIComponent(JSON.stringify(toState))
+ window.location.hash = btoa(encodeURIComponent(JSON.stringify(toState)))
 }
 
 let lastState = {}
@@ -494,7 +494,7 @@ function route() {
  const { hash } = window.location
  try {
   lastState = hash.length >= 3
-   ? JSON.parse(decodeURIComponent(hash.substring(1)))
+   ? JSON.parse(decodeURIComponent(atob(hash.substring(1))))
    : {}
   requestAnimationFrame(function () { render(lastState) })
  }
