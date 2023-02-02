@@ -388,7 +388,7 @@ body, input, textarea, button, select {
  '/main.js': {
   contentType: 'text/javascript; charset=utf-8',
   content: `// Tag Me In main.js
-const WORKER_TIMEOUT = 2500//ms
+const WORKER_TIMEOUT = 15000//ms
 
 async function runScript(source, payload) {
  const tmiClientSource = \`;(self ?? this ?? window).TMI = {
