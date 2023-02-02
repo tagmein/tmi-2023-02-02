@@ -11,6 +11,12 @@ function href(updates) {
 
 const segments = path === '/' ? [] : path.replace(/^\//, '').split('/')
 
+TMI.setTitle(
+ segments.length > 0
+  ? segments[segments.length - 1]
+  : 'root'
+)
+
 const { files, folders, contents, isFile } = await TMI.list(segments)
 
 const dialogScript = `<script>
@@ -108,6 +114,10 @@ const saveFileScript = `<script>
 
 const tmiClientScript = `<script>
  ${TMI.clientSource}
+ TMI.setTitle = function (title) {
+  console.log('posting title message to parent: ' + title)
+  parent.postMessage({ type: 'title', title })
+ }
 </script>`
 
 const CSS = `<style>

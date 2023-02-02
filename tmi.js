@@ -390,9 +390,24 @@ body, input, textarea, button, select {
   content: `// Tag Me In main.js
 const WORKER_TIMEOUT = 15000//ms
 
+window.addEventListener('message', function ({ data: message }) {
+ console.log(message, arguments)
+ switch(message.type) {
+  case 'title':
+   const { title } = message
+   document.title = title + ' - Tag Me In'
+   break
+  default:
+   throw new Error('Unexpected message type on window: ' + message.type)
+ }
+})
+
 async function runScript(source, payload) {
  const tmiClientSource = \`;(self ?? this ?? window).TMI = {
  clientKey: \${JSON.stringify(payload.clientKey)},
+ setTitle(title) {
+  postMessage({ type: 'title', title })
+ },
  async list(path) {
   const listResponse = await fetch(\\\`\${payload.origin}/list?path=\\\${encodeURIComponent(path.join('/'))}\\\`, {
    headers: {
@@ -454,27 +469,40 @@ self.onmessage = function ({ data }) {
  async function worker() {
   \${source}
  }
- worker().then(postMessage)
+ worker().then(function (response) {
+  postMessage({ type: 'response', response })
+ })
 }\`
  const scriptBlob = new Blob([wrappedSource], {
   type: 'application/javascript'
  })
  const scriptBlobURL = URL.createObjectURL(scriptBlob)
  const scriptWorker = new Worker(scriptBlobURL)
- return new Promise((resolve, reject) => {
+ return new Promise(function (resolve, reject) {
   const terminateTimeout = setTimeout(
-   () => {
+   function () {
     scriptWorker.terminate()
     console.error('Error from worker, wrapped source:')
     console.error(wrappedSource)
     reject(new Error(\`worker script terminated after \${WORKER_TIMEOUT}ms\`))
    }, WORKER_TIMEOUT
   )
-  scriptWorker.addEventListener('message', ({ data }) => {
-   clearTimeout(terminateTimeout)
-   resolve(data)
+  scriptWorker.addEventListener('message', function ({ data: message }) {
+   switch(message.type) {
+    case 'response':
+     const { response } = message
+     clearTimeout(terminateTimeout)
+     resolve(response)
+     break
+    case 'title':
+     const { title } = message
+     document.title = title + ' - Tag Me In'
+     break
+    default:
+     throw new Error('Unexpected message type from worker: ' + message.type)
+   }
   })
-  scriptWorker.addEventListener('error', error => {
+  scriptWorker.addEventListener('error', function (error) {
    clearTimeout(terminateTimeout)
    console.error('Error from worker, wrapped source:')
    console.error(wrappedSource)
@@ -544,6 +572,11 @@ async function render(state) {
    outputFrame.contentDocument.write(\`<head>
  <meta charset="utf-8" />
  <link rel="stylesheet" type="text/css" href="/main.css" />
+ <script>
+  window.addEventListener('message', function (message) {
+   parent.postMessage(message.data)
+  })
+ </script>
 </head>
 <body>\${output}\</body>\`)
    outputFrame.contentDocument.close()
