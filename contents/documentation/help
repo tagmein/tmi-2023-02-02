@@ -1,0 +1,15 @@
+<h1>Help</h1>
+
+<h3>How to use Tag Me In</h3>
+
+<p>Organize content with folders, and add HTML to files. Files contain any valid HTML. You can edit or view files with the editor.</p>
+
+<p>You can add &lt;script&gt; tags to files to make them dynamic, see ##/applications for examples of this.</p>
+
+<p>Files can have links to other files by using a double-hash followed immediately by a valid path. Paths can be relative or absolute, and may include .. to refer to a folder above the current folder.</p>
+
+<h3>Link example</h3>
+<p>See the ##/circle entry for an example of links, note that when pluralizing a word you should surround the link in a &lt;span&gt; element to avoid the s becoming part of the link:</p>
+<blockquote>&lt;p&gt;a &#35;&#35;/line where all &lt;span&gt;&#35;&#35;/point&lt;/span&gt;s on a line are equally distant from a center &#35;&#35;/point&lt;/p&gt;</blockquote>
+<p>This renders as:</p>
+<blockquote><p>a ##/line where all <span>##/point</span>s on a line are equally distant from a center ##/point</p></blockquote>

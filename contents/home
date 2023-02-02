@@ -6,7 +6,7 @@ const { state, source } = data
 const { path = '/', mode = 'view' } = state
 
 function href(updates) {
- return `#${encodeURIComponent(JSON.stringify({ ...state, ...updates }))}`
+ return `#${btoa(encodeURIComponent(JSON.stringify({ ...state, ...updates })))}`
 }
 
 const segments = path === '/' ? [] : path.replace(/^\//, '').split('/')
@@ -320,16 +320,35 @@ const TOOLBAR = `<div class="toolbar">
 </div>`
 
 const linkifyScript = `<script>
+ function resolve(pathArray) {
+  const output = []
+  for (const segment of pathArray) {
+   if (segment === '..') {
+    output.pop()
+   }
+   else {
+    output.push(segment)
+   }
+  }
+  return output
+ }
  function linkify(content) {
   return content.replace(/\\#\#([a-z0-9/.]+)/g, function (_, link) {
    const href = {
     mode: ${JSON.stringify(mode)},
     source: ${JSON.stringify(source)},
-    path: [...${JSON.stringify(segments.slice(0, segments.length - 1))}, link].join('/')
+    path: resolve([
+     ...(
+      link.startsWith('/')
+       ? []
+       : ${JSON.stringify(segments.slice(0, segments.length - 1))}
+     ),
+     link
+    ]).join('/')
    }
    return \`<a
     target="_top"
-    href="#\${encodeURIComponent(JSON.stringify(href))}"
+    href="#\${btoa(encodeURIComponent(JSON.stringify(href)))}"
    >\${link}</a>\`
   })
  }

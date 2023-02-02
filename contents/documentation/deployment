@@ -1,0 +1,33 @@
+<h1>Deployment</h1>
+
+<h3>How to run Tag Me In on your own web server</h3>
+
+<p>This guide will use Ubuntu as an example operating system, using Nginx as a reverse proxy to send HTTP traffic to "tmi.js" and uses LetsEncrypt to ensure your new site uses a HTTPS connection.</p>
+
+<h3>Step 1: Copy "tmi.js" to your web server</h3>
+<p>Create a folder to contain Tag Me In script and contents</p>
+<blockquote>mkdir ~/tagmein</blockquote>
+<p>Download "tmi.js" from <a target="_blank" href="https://github.com/tagmein/tagme.in/blob/main/tmi.js">GitHub</a> and upload it to your web server. In this guide, we will assume you placed it in the folder we just created, so the path to the Tag Me In script is "~/tagmein/tmi.js"</p>
+
+<h3>Step 2: Make "tmi.js" executable</h3>
+<blockquote>chmod +x ~/tagmein/tmi.js</blockquote>
+
+<h3>Step 3: Install Node.js 18+</h3>
+<p>See <a target="_blank" href="https://github.com/nodesource/distributions/blob/master/README.md">NodeSource binary distributions</a> for instructions.</p>
+
+<h3>Step 4: Install pm2</h3>
+<blockquote>npm install --global pm2</blockquote>
+
+<h3>Step 5: Start "tmi.js" with pm2</h3>
+<blockquote>pm2 start ~/tagmein/tmi.js</blockquote>
+<blockquote>pm2 save</blockquote>
+
+<h3>Step 6: Install Nginx</h3>
+<blockquote>sudo apt-get update</blockquote>
+<blockquote>sudo apt-get install nginx</blockquote>
+
+<h3>Step 7: Configure nginx to point to "tmi.js" port</h3>
+<p>The default port is 3000, follow instructions here to setup Nginx properly: <a target="_blank" href="https://steve-mu.medium.com/set-up-nginx-reverse-proxy-with-lets-encrypt-ssl-certificate-on-ubuntu-ba4906411133">Steve Mu on Medium: Set up nginx reverse proxy with Let’s Encrypt SSL certificate on Ubuntu</a></p>
+
+<h3>Step 8: Configure DNS records</h3>
+<p>This step will vary based on your web hosting provider. Follow your host's instructions to point your domain name to the IP address of the server running Nginx and "tmi.js". If you did everything correctly, you can now visit your domain name and you will see Tag Me In running!</p>

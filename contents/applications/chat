@@ -1,7 +1,7 @@
 <script>
  async function main() {
-  const { files } = await TMI.list(`.private/${TMI.clientKey}`)
-  console.log(files)
+  const { files, folders } = await TMI.list(['.private', TMI.clientKey])
+  console.log(files, folders)
  }
  main()
 </script>

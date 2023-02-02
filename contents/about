@@ -37,5 +37,7 @@
 
  <p>If you'd like to run your own instance, the server script "tmi.js" is available on <a target="_blank" href="https://github.com/tagmein/tagme.in/blob/main/tmi.js">GitHub</a>.</p>
 
+<p>Learn how to get started using Tag Me In at ##documentation/help and how to deploy the server code at <span>##documentation/deployment</span>.</p>
+
  <p>Thank you for being a part of this community. Your friend, Nate.</p>
 </section>
