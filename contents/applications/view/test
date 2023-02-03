@@ -1,3 +1,4 @@
+<h1>Test playground</h1>
 <script>
  console.log(TMI.setTitle)
  TMI.setTitle('test title')

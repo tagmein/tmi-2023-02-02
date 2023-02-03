@@ -24,6 +24,8 @@
  *  PORT=4040 BASE=mydirname ./tmi.js
  */
 
+const DEFAULT_SOURCE_APPLICATION = 'applications/home.tmi'
+
 const MAX_REQUEST_BODY_SIZE = 1024 * 64 // 64kb
 
 const [http, fs, path, qs] = 'http fs path querystring'
@@ -404,6 +406,7 @@ window.addEventListener('message', function ({ data: message }) {
 
 async function runScript(source, payload) {
  const tmiClientSource = \`;(self ?? this ?? window).TMI = {
+ defaultSourceApplication: ${JSON.stringify(DEFAULT_SOURCE_APPLICATION)},
  clientKey: \${JSON.stringify(payload.clientKey)},
  setTitle(title) {
   postMessage({ type: 'title', title })
@@ -554,7 +557,7 @@ const clientKey = localStorage.getItem(clientKeyStorage)
 
 async function render(state) {
  // console.log('render', { state })
- const { source = 'home' } = state ?? {}
+ const { source = ${JSON.stringify(DEFAULT_SOURCE_APPLICATION)} } = state ?? {}
  try {
   const scriptResponse = await fetch(\`/source/\${source}\`)
   if (scriptResponse.ok) {

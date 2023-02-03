@@ -121,6 +121,12 @@
  async function renderApp() {
   const { contents } = await TMI.list([...baseFolder, 'list'])
   items = contents?.length > 2 ? JSON.parse(contents) : []
+  items.sort(function (a, b) {
+   if (a.done !== b.done) {
+    return a.done ? -1 : 1
+   }
+   return a.updated - b.updated
+  })
   app.innerHTML = `
    <h3>To do list</h3>
    ${items.map(renderTodoItem).join('')}

@@ -2,6 +2,8 @@ return `
 <script>
 ${TMI.clientSource}
 
+TMI.setTitle('Inception Notes Viewer')
+
 async function load() {
   const baseFolder = ['.private', TMI.clientKey, 'incept']
   await TMI.createFolder(baseFolder)
@@ -11,7 +13,7 @@ async function load() {
 
 const noteHtml = (note, indentation) => {
   return ${'`'}
-<div class="note" style="background-color:\${note.color};margin-left:\${indentation * 2}rem;" id="note-\${note.id}">
+<div class="note" style="background-color:\${note.color};margin-left:\${indentation * 3}rem;" id="note-\${note.id}">
   <label>
     <input type="checkbox" \${note.checked ? 'checked="true"' : ''} />
     <span>\${note.name}</span>
@@ -23,7 +25,13 @@ const noteHtml = (note, indentation) => {
 const renderNoteTree = (note, notesById, indentation) => {
   return [
     noteHtml(note, indentation),
-    ...(note.items?.map(item => notesById[item]).filter(item => !!item?.name)?.map(item => renderNoteTree(item, notesById, indentation + 1)) ?? [])
+    ...(
+      note.items
+        ?.map(item => notesById[item])
+        .filter(item => !!item?.name)
+        ?.map(item => renderNoteTree(item, notesById, indentation + 1))
+        ?? []
+      )
   ].join('')
 }
 
@@ -44,7 +52,10 @@ const reload = async () => {
 
   console.log(notesById)
   
-  const sectionHTML = notes.filter(note => !note.parent && !!note.name).map(note => renderNoteTree(note, notesById, 0)).join('')
+  const sectionHTML = notes
+    .filter(note => !note.parent && !!note.name)
+    .map(note => renderNoteTree(note, notesById, 0))
+    .join('')
   document.getElementById('notes').innerHTML = sectionHTML
 }
 
@@ -69,5 +80,5 @@ section {
   color: black;
 }
 </style>
-<section id="notes"></section>
+<section id="notes">Loading notes...</section>
 `

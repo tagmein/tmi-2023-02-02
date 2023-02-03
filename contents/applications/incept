@@ -84,7 +84,7 @@ console.log(state, note)
     request.onreadystatechange = () => {
       if (request.readyState == 4) {
         if (request.status == 200) {
-          notes.innerHTML = 'Notes are syncing over websocket, <a href="https://tagme.in/#{%220%22%3A%22%22%2C%22source%22%3A%22%2Fapplications%2Fview%2Fnote%22%2C%22mode%22%3A%22view%22}" target="_blank">open notes</a>'
+          notes.innerHTML = 'Notes are syncing over websocket, <a href="https://tagme.in/#eyUyMjAlMjIlM0ElMjIlMjIlMkMlMjJzb3VyY2UlMjIlM0ElMjIlMkZhcHBsaWNhdGlvbnMlMkZ2aWV3JTJGbm90ZSUyMiUyQyUyMm1vZGUlMjIlM0ElMjJ2aWV3JTIyfQ==" target="_blank">open notes</a>'
           saveNotesFromSync(JSON.parse(request.responseText))
         } else {
           notes.innerText = 'Error loading notes: ' + request.statusText

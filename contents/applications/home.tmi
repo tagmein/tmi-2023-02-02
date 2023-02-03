@@ -312,7 +312,7 @@ const CSS = `<style>
 </style>`
 
 const TOOLBAR = `<div class="toolbar">
- <span title="The current script">${source}</span>
+ <span title="The current script: '${source}'">${source.split('/').pop()}</span>
  <a
   class="folder segment"
   target="_top"
@@ -385,8 +385,12 @@ if (isFile) {
  <script>
   const viewFrame = document.createElement('iframe')
   document.getElementById('viewer').appendChild(viewFrame)
-  viewFrame.contentDocument.open()
-  viewFrame.contentDocument.write(\`<head>
+  if (${path.endsWith('.tmi')}) {
+   viewFrame.setAttribute('src', ${JSON.stringify(href({ source: path, path: '/' }))})
+  }
+  else {
+   viewFrame.contentDocument.open()
+   viewFrame.contentDocument.write(\`<head>
  <meta charset="utf-8" />
  <link rel="stylesheet" type="text/css" href="/main.css" />
  <style>
@@ -404,7 +408,8 @@ if (isFile) {
   JSON.stringify(encodeURIComponent(contents))
  }))}
 </body>\`)
-  viewFrame.contentDocument.close()
+   viewFrame.contentDocument.close()
+  }
  </script>`
    default:
     return '<h1>Error</h1>'
@@ -434,7 +439,7 @@ if (isFile) {
  <div class="container">
   ${TOOLBAR}
   <div class="toolbar">
-   <a target="_top" disabled="${mode === 'view'}" href="${href({ mode: 'view' })}">View</a>
+   <a target="_top" disabled="${mode === 'view'}" href="${href({ mode: 'view' })}">${path.endsWith('.tmi') ? 'Run' : 'View'}</a>
    <a target="_top" disabled="${mode === 'edit'}" href="${href({ mode: 'edit' })}">Edit</a>
    <span class="spacer"></span>
    ${tools}
