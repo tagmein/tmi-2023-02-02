@@ -91,7 +91,7 @@ setImmediate(async function () {
   else {
    return {
     isFile: true,
-    contents: FILE.read(sourcePath)
+    contents: await FILE.read(sourcePath)
    }
   }
  }
@@ -136,7 +136,7 @@ setImmediate(async function () {
   if (clientKey.length !== 40) {
    return false
   }
-  const validClientKeys = FILE.read(path.join(__dirname, keyFile))
+  const validClientKeys = await FILE.read(path.join(__dirname, keyFile))
    .split('\n')
   if (validClientKeys.includes(clientKey)) {
    console.log('valid client key presented')
@@ -160,7 +160,7 @@ setImmediate(async function () {
     return {
      statusCode: 200,
      contentType: 'text/plain; charset=utf-8',
-     content: FILE.read(sourcePath) // @todo make async
+     content: await FILE.read(sourcePath) // @todo make async
     }
    }
   }
