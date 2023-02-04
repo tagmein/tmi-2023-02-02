@@ -1,0 +1,31 @@
+<div class="led" id="signal_light"></div>
+<style>
+ .led {
+  border: 2px solid #444;
+  box-shadow: inset -4px -4px 16px #00000060;
+  width: 48px;
+  height: 48px;
+  border-radius: 100%;
+  margin: 48px;
+  background-color: #777;
+ }
+ .led[data-state="on"] {
+  background-color: green;
+  box-shadow: inset -4px -4px 8px #00000060, inset 4px 4px 16px #ffffff60;
+ }
+</style>
+<script>
+ const signalLight = document.getElementById("signal_light")
+ async function init() {
+  const response = await fetch('http://127.0.0.1:1880/status')
+  const status = await response.json()
+  signalLight.setAttribute('data-state', status ? 'on' : 'off')
+ }
+ init()
+ const websocket = new WebSocket('ws://127.0.0.1:1880/ws')
+ websocket.onmessage = message => {
+  console.log('received message with data', message.data)
+  const data = JSON.parse(message.data)
+  signalLight.setAttribute('data-state', data ? 'on' : 'off')
+ }
+</script>
