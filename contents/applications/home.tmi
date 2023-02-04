@@ -53,11 +53,11 @@ const dialogScript = `<script>
   return new Promise(function (resolve, reject) {
    function yes() {
     document.body.removeChild(dialogScreenElement)
-    resolve(inputElement?.value)
+    resolve(inputElement?.value ?? true)
    }
    function no() {
     document.body.removeChild(dialogScreenElement)
-    reject()
+    resolve()
    }
    dialogYesButton.addEventListener('click', yes)
    dialogNoButton.addEventListener('click', no)
@@ -169,7 +169,7 @@ const CSS = `<style>
   flex-shrink: 0;
  }
  button.new {
-  color: #0f0;
+  color: #0f7;
  }
  a:hover, button:hover {
   background-color: #ffffff28;
@@ -305,13 +305,17 @@ const CSS = `<style>
  #client-key:hover {
   width: auto;
  }
+ .newline {
+  flex-grow: 1;
+  width: 100%;
+ }
  *:focus {
   outline: none;
   box-shadow: inset 0 0 0 4px #ffffff79;
  }
 </style>`
 
-const TOOLBAR = `<div class="toolbar">
+const TOOLBAR = `<div class="toolbar" id="navigation-toolbar">
  <span title="The current script: '${source}'">${source.split('/').pop()}</span>
  <a
   class="folder segment"
@@ -484,10 +488,44 @@ function firstLetter(scope, name) {
  const key = `${scope}:${letter}`
  if (!(key in firstLetters)) {
   firstLetters[key] = true
-  return `<span class="letter">${letter}</span>`
+  return `<div class="newline"></div><span class="letter" id="letter-${letter}">${letter}</span>`
  }
  return ''
 }
+
+const navigationScript = `<script>
+ window.addEventListener('keydown', ({ key, ctrlKey }) => {
+  switch (key) {
+   case 'ArrowUp':
+    if (ctrlKey) {
+     document.getElementById('navigation-toolbar').lastElementChild.previousElementSibling?.click?.()
+    }
+    else {
+     document.getElementById('navigation-toolbar').lastElementChild.focus()
+    }
+    break
+   case 'ArrowLeft':
+    document.activeElement.previousElementSibling?.focus()
+    break
+   case 'ArrowRight':
+    document.activeElement.nextElementSibling?.focus()
+    break
+   default:
+    if (key.length === 1) {
+     const letterId = \`letter-\${key}\`
+     const letterSpan = document.getElementById(letterId)
+     if (letterSpan) {
+      letterSpan.nextElementSibling.focus()
+     }
+    }
+  }
+ })
+</script>`
+
+const filesAndFolders = [
+ ...files.map(name => ({ name, type: 'file' })),
+ ...folders.map(name => ({ name, type: 'folder' }))
+].sort((a, b) => a.name.localeCompare(b.name))
 
 return `
  ${CSS}
@@ -496,37 +534,25 @@ return `
  ${messageScript}
  ${newFileScript}
  ${newFolderScript}
+ ${navigationScript}
  <div id="client-key" title="Client key"></div>
  ${clientKeyScript}
  <div class="container">
   ${TOOLBAR}
   <div class="contents">
-   <div class="folders">
-    <h2>Folders</h2>
-    <div class="listing">${
-     folders.map(function (f) {
-      return `${firstLetter('folder', f)}<a
-       class="folder"
-       target="_top"
-       title="Visit folder"
-       href="${href({ path: ['', ...segments, f].join('/') })}"
-      >${f}</a>`
-     }).join('')}
-     <button class="new" title="New folder" onclick="newFolder()">+</button>
-    </div>
-   </div>
    <div class="files">
-    <h2>Files</h2>
     <div class="listing">${
-     files.map(function (f) {
-      return `${firstLetter('file', f)}<a
-       class="file"
+     filesAndFolders.map(function (f) {
+      return `${firstLetter('file', f.name)}<a
+       class="${f.type}"
        target="_top"
-       title="Visit file"
-       href="${href({ path: ['', ...segments, f].join('/') })}"
-      >${f}</a>`
+       title="Visit ${f.type}"
+       href="${href({ path: ['', ...segments, f.name].join('/') })}"
+      >${f.name}</a>`
      }).join('')}
-     <button class="new" title="New file" onclick="newFile()">+</button>
+     <div class="newline"></div>
+     <button class="new" title="New file" onclick="newFile()">+file</button>
+     <button class="new" title="New folder" onclick="newFolder()">+folder</button>
     </div>
    </div>
   </div>
