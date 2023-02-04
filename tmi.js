@@ -136,7 +136,7 @@ setImmediate(async function () {
   if (clientKey.length !== 40) {
    return false
   }
-  const validClientKeys = await FILE.read(path.join(__dirname, keyFile))
+  const validClientKeys = (await FILE.read(path.join(__dirname, keyFile)))
    .split('\n')
   if (validClientKeys.includes(clientKey)) {
    console.log('valid client key presented')
