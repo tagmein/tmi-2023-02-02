@@ -6,6 +6,14 @@
 
 <p>You can add &lt;script&gt; tags to files to make them dynamic, see ##/applications for examples of this.</p>
 
+<p>Files that end with the extension '.tmi' are treated as JavaScript that returns HTML to render, for example the following would render a heading containing the text "the number is 150":<p>
+
+<blockquote>
+<pre>const number = 150
+
+return `&lt;h1&gt;the number is ${number}&lt;/h1&gt;`</pre>
+</blockquote>
+
 <p>Files can have links to other files by using a double-hash followed immediately by a valid path. Paths can be relative or absolute, and may include .. to refer to a folder above the current folder.</p>
 
 <h3>Link example</h3>
