@@ -72,20 +72,19 @@ setImmediate(function () {
  }
 
  async function list(atPath, requestHeaders) {
-  const clientKey = await ensurePrivateDirectory(atPath, requestHeaders)
+  const clientKey = requestHeaders['x-client-key']
+  const sourcePath = path.join(basePath, atPath)
   if (atPath === privateDirectory) {
    return {
-    files: [],
-    folders: [ clientKey ],
-    isFile: false
+    items: [
+     { type: 'folder', count: 0, name: clientKey }
+    ]
    }
   }
-  const sourcePath = path.join(basePath, atPath)
-  if (DIRECTORY.is(sourcePath)) {
-   const items = DIRECTORY.list(sourcePath)
+  else if (await DIRECTORY.is(sourcePath)) {
    return {
-    files: items.filter(node => NODE.type(node) === 'file').map(node => node.name),
-    folders: items.filter(node => NODE.type(node) === 'directory').map(node => node.name),
+    items: (await DIRECTORY.list(sourcePath))
+     .filter(x => !(atPath === '' && x.name === privateDirectory)),
     isFile: false
    }
   }
@@ -100,23 +99,23 @@ setImmediate(function () {
  async function createFile(requestBody, requestHeaders) {
   const clientKey = await ensurePrivateDirectory(requestBody.path, requestHeaders)
   const filePath = path.join(basePath, requestBody.path)
-  if (FILE.is(filePath)) {
+  if (await FILE.is(filePath)) {
    return { statusCode: 400, content: `file "${filePath}" exists` }
   }
-  if (DIRECTORY.is(filePath)) {
+  if (await DIRECTORY.is(filePath)) {
    return { statusCode: 400, content: `folder "${filePath}" exists` }
   }
-  FILE.write(filePath, '')
+  await FILE.write(filePath, '')
   return { statusCode: 201 }
  }
 
  async function createFolder(requestBody, requestHeaders) {
   const clientKey = await ensurePrivateDirectory(requestBody.path, requestHeaders)
   const folderPath = path.join(basePath, requestBody.path)
-  if (FILE.is(folderPath)) {
+  if (await FILE.is(folderPath)) {
    return { statusCode: 400, content: `file "${folderPath}" exists` }
   }
-  if (!DIRECTORY.is(folderPath)) {
+  if (!(await DIRECTORY.is(folderPath))) {
    DIRECTORY.create(folderPath)
   }
   return { statusCode: 201 }
@@ -233,16 +232,37 @@ const DIRECTORY = {
  create(directoryPath) {
   fs.mkdirSync(directoryPath)
  },
- list(testPath) {
-  if (testPath.endsWith(privateDirectory)) {
-   return []
-  }
-  return fs.readdirSync(testPath, {
-   withFileTypes: true,
+ async count(directoryPath) {
+  return new Promise(function (resolve, reject) {
+   fs.readdir(directoryPath, function (error, nodes) {
+    if (error) {
+     reject(error)
+    }
+    else {
+     resolve(nodes.length)
+    }
+   })
   })
-  .filter(x => x.name !== privateDirectory)
  },
- is(testPath) {
+ async list(testPath) {
+  return Promise.all(fs.readdirSync(testPath, {
+   withFileTypes: true,
+  }).map(async (node) => {
+   switch (NODE.type(node)) {
+    case 'file':
+     return { type: 'file', name: node.name }
+    case 'directory':
+     return {
+      type: 'folder', 
+      name: node.name,
+      count: await DIRECTORY.count(path.join(testPath, node.name))
+     }
+    default:
+     return
+   }
+  }))
+ },
+ async is(testPath) {
   return fs.existsSync(testPath) && fs.lstatSync(testPath).isDirectory()
  },
 }
@@ -393,7 +413,6 @@ body, input, textarea, button, select {
 const WORKER_TIMEOUT = 15000//ms
 
 window.addEventListener('message', function ({ data: message }) {
- console.log(message, arguments)
  switch(message.type) {
   case 'title':
    const { title } = message
@@ -583,6 +602,7 @@ async function render(state) {
 </head>
 <body>\${output}\</body>\`)
    outputFrame.contentDocument.close()
+   outputFrame.focus()
   }
   else {
    mainFrame.innerHTML = \`<h2>That didn't work</h2><p>Item '\${source}' \${scriptResponse.statusText}</p>\`

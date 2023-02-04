@@ -17,7 +17,7 @@ TMI.setTitle(
   : 'root'
 )
 
-const { files, folders, contents, isFile } = await TMI.list(segments)
+const { items, contents, isFile } = await TMI.list(segments)
 
 const dialogScript = `<script>
  async function dialog(contents, input, existingValue) {
@@ -188,9 +188,6 @@ const CSS = `<style>
   padding: 0 10px;
   background-color: #202020;
  }
- .folders {
-  border-bottom: 1px solid #484848;
- }
  .segment:before {
   position: absolute;
   content: '/';
@@ -280,11 +277,29 @@ const CSS = `<style>
   text-align: center;
   position: relative;
   line-height: 40px;
+  transform-origin: center;
   transform: scale(0.5);
   font-size: 30px;
   font-weight: bold;
   border-radius: 5px;
-  left: 10px;
+  left: 5px;
+ }
+ .folder:after {
+  display: inline-block;
+  content: attr(data-count);
+  height: 24px;
+  line-height: 24px;
+  padding: 0px 4px;
+  box-sizing: border-box;
+  margin-left: 6px;
+  margin-right: -4px;
+  border-radius: 16px;
+  min-width: 24px;
+  text-align: center;
+  transform-origin: center;
+  background-color: #fff;
+  color: #000;
+  opacity: 0.65;
  }
  #client-key {
   position: fixed;
@@ -318,14 +333,14 @@ const CSS = `<style>
 const TOOLBAR = `<div class="toolbar" id="navigation-toolbar">
  <span title="The current script: '${source}'">${source.split('/').pop()}</span>
  <a
-  class="folder segment"
+  class="segment"
   target="_top"
   title="Visit folder"
   href="${href({ path: '/' })}"
  >root</a>
  ${segments.map(function (segment, i) {
   return `<a
-   class="folder segment"
+   class="segment"
    target="_top"
    title="Visit folder"
    href="${href({ path: '/' + segments.slice(0, i + 1).join('/') })}"
@@ -522,10 +537,15 @@ const navigationScript = `<script>
  })
 </script>`
 
-const filesAndFolders = [
- ...files.map(name => ({ name, type: 'file' })),
- ...folders.map(name => ({ name, type: 'folder' }))
-].sort((a, b) => a.name.localeCompare(b.name))
+// folders first within buckets of initial letter
+items.sort((a, b) => {
+ if (a.name[0].toLowerCase() === b.name[0].toLowerCase()) {
+  return b.type.localeCompare(a.type)
+ }
+ else {
+  return a.name.localeCompare(b.name)
+ }
+})
 
 return `
  ${CSS}
@@ -542,8 +562,9 @@ return `
   <div class="contents">
    <div class="files">
     <div class="listing">${
-     filesAndFolders.map(function (f) {
+     items.map(function (f) {
       return `${firstLetter('file', f.name)}<a
+       ${'count' in f ? `data-count="${f.count}"` : ''}
        class="${f.type}"
        target="_top"
        title="Visit ${f.type}"
