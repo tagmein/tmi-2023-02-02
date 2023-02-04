@@ -284,6 +284,9 @@ const CSS = `<style>
   border-radius: 5px;
   left: 5px;
  }
+ .file, .folder, .segment {
+  white-space: pre;
+ }
  .folder:after {
   display: inline-block;
   content: attr(data-count);

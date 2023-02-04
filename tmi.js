@@ -33,28 +33,28 @@ const [http, fs, path, qs] = 'http fs path querystring'
 
 const privateDirectory = '.private'
 
-setImmediate(function () {
+setImmediate(async function () {
  console.log(`=== Tag Me In === ${__dirname}`)
  const port = PORT.normalize(process.env.PORT, 3000)
  const baseDirectory = process.env.BASE ?? 'contents'
  const basePath = path.join(__dirname, baseDirectory)
  const keyFile = process.env.KEYFILE ?? 'KEYS'
 
- if (DIRECTORY.is(basePath)) {
+ if (await DIRECTORY.is(basePath)) {
   console.log(`Found content directory ${basePath}`)
  }
  else {
-  DIRECTORY.create(basePath)
+  await DIRECTORY.create(basePath)
   console.log(`Created content directory ${basePath}`)
  }
 
  const privateBasePath = path.join(basePath, privateDirectory)
 
- if (DIRECTORY.is(privateBasePath)) {
+ if (await DIRECTORY.is(privateBasePath)) {
   console.log(`Found private directory ${privateBasePath}`)
  }
  else {
-  DIRECTORY.create(privateBasePath)
+  await DIRECTORY.create(privateBasePath)
   console.log(`Created private directory ${privateBasePath}`)
  }
 
@@ -63,7 +63,7 @@ setImmediate(function () {
   const myDirectory = `${privateDirectory}/${clientKey}`
   const myDirectoryPath = path.join(basePath, myDirectory)
   if (clientKey?.length === 40 && atPath.startsWith(myDirectory)) {
-   if (!DIRECTORY.is(myDirectoryPath)) {
+   if (!(await DIRECTORY.is(myDirectoryPath))) {
     DIRECTORY.create(myDirectoryPath)
     console.log(`Created private directory for client ${myDirectoryPath}`)
    }
@@ -124,7 +124,7 @@ setImmediate(function () {
  async function saveFile(requestBody, requestHeaders) {
   const clientKey = await ensurePrivateDirectory(requestBody.path, requestHeaders)
   const filePath = path.join(basePath, requestBody.path)
-  if (DIRECTORY.is(filePath)) {
+  if (await DIRECTORY.is(filePath)) {
    return { statusCode: 400, content: `folder "${filePath}" exists` }
   }
   FILE.write(filePath, requestBody.content)
@@ -156,7 +156,7 @@ setImmediate(function () {
   }
   else if (requestMethod === 'GET' && requestPath.startsWith('/source/')) {
    const sourcePath = path.join(basePath, requestPath.substring('/source/'.length))
-   if (FILE.is(sourcePath)) {
+   if (await FILE.is(sourcePath)) {
     return {
      statusCode: 200,
      contentType: 'text/plain; charset=utf-8',
@@ -268,16 +268,16 @@ const DIRECTORY = {
 }
 
 const FILE = {
- is(testPath) {
+ async is(testPath) {
   return fs.existsSync(testPath) && fs.lstatSync(testPath).isFile()
  },
- read(testPath) {
-  if (FILE.is(testPath)) {
+ async read(testPath) {
+  if (await FILE.is(testPath)) {
    return fs.readFileSync(testPath, { encoding: 'utf8', flag: 'r' })
   }
   return ''
  },
- write(testPath, contents) {
+ async write(testPath, contents) {
   return fs.writeFileSync(testPath, contents, { encoding: 'utf8', flag: 'w' })
  },
 }
