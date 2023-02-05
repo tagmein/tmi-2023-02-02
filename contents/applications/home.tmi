@@ -502,7 +502,7 @@ const newFolderScript = `<script>
 const firstLetters = {}
 
 function firstLetter(scope, name) {
- const letter = name[0]
+ const letter = name[0].toLowerCase()
  const key = `${scope}:${letter}`
  if (!(key in firstLetters)) {
   firstLetters[key] = true
@@ -512,7 +512,10 @@ function firstLetter(scope, name) {
 }
 
 const navigationScript = `<script>
- window.addEventListener('keydown', ({ key, ctrlKey }) => {
+ window.addEventListener('keydown', ({ key, ctrlKey, target }) => {
+  if ([ 'INPUT', 'TEXTAREA', 'SELECT' ].includes(target.tagName)) {
+   return
+  }
   switch (key) {
    case 'ArrowUp':
     if (ctrlKey) {
