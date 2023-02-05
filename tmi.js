@@ -24,7 +24,7 @@
  *  PORT=4040 BASE=mydirname ./tmi.js
  */
 
-const DEFAULT_SOURCE_APPLICATION = 'applications/home.tmi'
+const DEFAULT_SOURCE_APPLICATION = 'Applications/home.tmi'
 
 const MAX_REQUEST_BODY_SIZE = 1024 * 64 // 64kb
 
