@@ -412,6 +412,9 @@ body, input, textarea, button, select {
   content: `// Tag Me In main.js
 const WORKER_TIMEOUT = 15000//ms
 
+const CLIENT_KEY_LENGTH = 40
+const clientKeyStorage = 'client-key'
+
 window.addEventListener('message', function ({ data: message }) {
  switch(message.type) {
   case 'title':
@@ -427,6 +430,11 @@ async function runScript(source, payload) {
  const tmiClientSource = \`;(self ?? this ?? window).TMI = {
  defaultSourceApplication: ${JSON.stringify(DEFAULT_SOURCE_APPLICATION)},
  clientKey: \${JSON.stringify(payload.clientKey)},
+ randomKey() { 
+  return Array(\${CLIENT_KEY_LENGTH}).fill(null).map(function () {
+   return Math.floor(Math.random() * 1e6).toString(36)[0]
+  }).join('')
+ },
  setTitle(title) {
   postMessage({ type: 'title', title })
  },
@@ -558,9 +566,6 @@ window.addEventListener('hashchange', route)
 route()
 
 const mainFrame = document.getElementById('main')
-
-const CLIENT_KEY_LENGTH = 40
-const clientKeyStorage = 'client-key'
 
 function randomClientKey() {
  return Array(CLIENT_KEY_LENGTH).fill(null).map(function () {
