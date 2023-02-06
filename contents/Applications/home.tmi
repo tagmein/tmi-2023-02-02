@@ -3,7 +3,7 @@ const { state, source } = data
 
 // console.log({ state, source })
 
-const { path = '/', mode = 'view' } = state
+const { path = '/', mode = 'view', preview = false } = state
 
 function href(updates) {
  return `#${btoa(encodeURIComponent(JSON.stringify({ ...state, ...updates })))}`
@@ -152,7 +152,14 @@ const CSS = `<style>
   display: flex;
   flex-direction: column;
  }
- body a, body button {
+ .contents-row {
+  flex-grow: 1;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: row;
+ }
+ body a, body button, body label {
   display: inline-block;
   padding: 0 10px;
   height: 40px;
@@ -168,10 +175,19 @@ const CSS = `<style>
   box-sizing: border-box;
   flex-shrink: 0;
  }
+ body label input[type="checkbox"], 
+ body a input[type="checkbox"] {
+  margin: 0;
+  vertical-align: -2px;
+  height: 20px;
+  width: 20px;
+  margin-right: -4px;
+  cursor: pointer;
+ }
  button.new {
   color: #0f7;
  }
- a:hover, button:hover {
+ body a:hover, body button:hover, body label:hover {
   background-color: #ffffff28;
  }
  a[disabled="true"], button:disabled {
@@ -390,29 +406,11 @@ const clientKeyScript = `<script>
  document.getElementById('client-key').innerText = ${JSON.stringify(TMI.clientKey)}
 </script>`
 
-if (isFile) {
- const content = (function () {
-  switch (mode) {
-   case 'edit':
-    return `
-  <div class="contents"><textarea class="editor" id="editor"></textarea></div>
-  <script>
-   document.getElementById('editor').value = decodeURIComponent(${
-    JSON.stringify(encodeURIComponent(contents))
-   })
-  </script>`
-   case 'view':
-    return `
- <div class="contents" id="viewer"></div>
- <script>
-  const viewFrame = document.createElement('iframe')
-  document.getElementById('viewer').appendChild(viewFrame)
-  if (${path.endsWith('.tmi')}) {
-   viewFrame.setAttribute('src', ${JSON.stringify(href({ source: path, path: '/' }))})
-  }
-  else {
-   viewFrame.contentDocument.open()
-   viewFrame.contentDocument.write(\`<head>
+const renderFrameScript = `<script>
+ function renderFrame(frame, frameContent) {
+  frame.contentDocument.documentElement.innerHTML = ''
+  frame.contentDocument.open()
+  frame.contentDocument.write(\`<head>
  <meta charset="utf-8" />
  <link rel="stylesheet" type="text/css" href="/main.css" />
  <style>
@@ -426,11 +424,48 @@ if (isFile) {
  })}
 </head>
 <body>
- \${linkify(decodeURIComponent(${
-  JSON.stringify(encodeURIComponent(contents))
- }))}
+ \${linkify(frameContent)}
 </body>\`)
-   viewFrame.contentDocument.close()
+  frame.contentDocument.close()
+ }
+</script>`
+
+if (isFile) {
+ const content = (function () {
+  switch (mode) {
+   case 'edit':
+    return `
+  <div class="contents-row">
+   <textarea class="editor" id="editor"></textarea>
+   ${preview ? `<iframe id="preview"></iframe>${renderFrameScript}` : ''}
+  </div>
+  <script>
+   const editor = document.getElementById('editor')
+   editor.value = decodeURIComponent(${
+    JSON.stringify(encodeURIComponent(contents))
+   })
+   if (${preview}) {
+    const previewFrame = document.getElementById('preview')
+    function renderPreview() {
+     renderFrame(previewFrame, editor.value)
+    }
+    editor.addEventListener('change', renderPreview)
+    editor.addEventListener('keyup', renderPreview)
+    renderPreview()
+   }
+  </script>`
+   case 'view':
+    return `
+ <div class="contents-row" id="viewer"></div>
+ ${renderFrameScript}
+ <script>
+  const viewFrame = document.createElement('iframe')
+  document.getElementById('viewer').appendChild(viewFrame)
+  if (${path.endsWith('.tmi')}) {
+   viewFrame.setAttribute('src', ${JSON.stringify(href({ source: path, path: '/' }))})
+  }
+  else {
+   renderFrame(viewFrame, decodeURIComponent(${JSON.stringify(encodeURIComponent(contents))}))
   }
  </script>`
    default:
@@ -441,6 +476,10 @@ if (isFile) {
   switch (mode) {
    case 'edit':
     return `
+ <a target="_top" href="${href({ preview: !preview })}">
+  <input style="pointer-events: none;" type="checkbox" ${preview === true ? 'checked' : ''} />
+  Preview
+ </a>
  <button onclick="saveFile()">Save</button>
     `
    case 'view':
@@ -456,6 +495,7 @@ if (isFile) {
  ${dialogScript}
  ${messageScript}
  ${saveFileScript}
+ ${renderFrameScript}
  <div id="client-key" title="Client key"></div>
  ${clientKeyScript}
  <div class="container">

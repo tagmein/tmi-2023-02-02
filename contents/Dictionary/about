@@ -18,10 +18,11 @@
  section {
   background-color: #212121;
   border-radius: 10px;
-  padding: 60px 80px;
-  max-width: 480px;
+  padding: 60px;
+  max-width: 720px;
   width: 80%;
   margin: 40px auto;
+  box-sizing: border-box;
  }
 </style>
 
