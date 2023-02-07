@@ -14,7 +14,7 @@
  .threads {
   width: 25%;
   max-width: 360px;
-  min-width: 200px;
+  min-width: 120px;
   border-right: 1px solid #797979;
   flex-shrink: 0;
  }
@@ -54,6 +54,10 @@
  }
  textarea {
   resize: none;
+  height: 120px;
+ }
+ textarea, input {
+  flex-shrink: 0;
  }
  button:hover {
   background-color: #ffffff28;
