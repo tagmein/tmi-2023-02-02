@@ -421,6 +421,12 @@ window.addEventListener('message', function ({ data: message }) {
    const { title } = message
    document.title = title + ' - Tag Me In'
    break
+  case 'key':
+   const { key } = message
+   localStorage.setItem(clientKeyStorage, key)
+   alert('Key updated, will now reload')
+   window.location.reload()
+   break
   default:
    throw new Error('Unexpected message type on window: ' + message.type)
  }
