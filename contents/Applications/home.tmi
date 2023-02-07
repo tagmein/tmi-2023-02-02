@@ -337,10 +337,8 @@ const CSS = `<style>
   font-size: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: pre;
   z-index: 10000;
- }
- #client-key:hover {
-  width: auto;
  }
  .newline {
   flex-grow: 1;
@@ -406,7 +404,16 @@ const linkifyScript = `<script>
 </script>`
 
 const clientKeyScript = `<script>
- document.getElementById('client-key').innerText = ${JSON.stringify(TMI.clientKey)}
+ const clientKeyElement = document.getElementById('client-key')
+ clientKeyElement.innerText = ${JSON.stringify(TMI.clientKey)}
+ async function editClientKey() {
+  const newKey = await dialog('Enter key', 'key', ${JSON.stringify(TMI.clientKey)})
+  if (newKey?.length === 40) {
+   parent.postMessage({ type: 'key', key: newKey })
+  }
+ }
+ clientKeyElement.addEventListener('click', editClientKey)
+ clientKeyElement.addEventListener('touchstart', editClientKey)
 </script>`
 
 const renderFrameScript = `<script>
@@ -502,7 +509,7 @@ if (isFile) {
  ${messageScript}
  ${saveFileScript}
  ${renderFrameScript}
- <div id="client-key" title="Client key"></div>
+ <div id="client-key" tabindex="0" title="Client key"></div>
  ${clientKeyScript}
  <div class="container">
   ${TOOLBAR}
