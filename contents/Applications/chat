@@ -16,6 +16,7 @@
   max-width: 360px;
   min-width: 200px;
   border-right: 1px solid #797979;
+  flex-shrink: 0;
  }
  .messages {
   overflow: hidden;
@@ -70,6 +71,22 @@
   right: 10px;
   font-size: 14px;
  }
+ .toolbar {
+  border-bottom: 1px solid #797979;
+  display: flex;
+  flex-direction: row;
+ }
+ .toolbar input {
+  width: 50%;
+ }
+ .toolbar input:last-of-type {
+  border-left: 1px solid #797979;
+  background-color: #202020;
+ }
+ *:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 4px #ffffff79;
+ }
 </style>
 <div class="contents">
  <div class="threads">
@@ -77,6 +94,10 @@
   <button class="new" onclick="newThread()">+ thread</button>
  </div>
  <div class="messages">
+  <div class="toolbar">
+   <input id="topic" placeholder="set topic" onchange="setTopic()" />
+   <input id="threadId" readonly title="Share this thread id for others to join" />
+  </div>
   <div class="history" id="history"></div>
   <input placeholder="enter name" id="name" />
   <textarea placeholder="enter message" id="message" onkeydown="messageKey(event)"></textarea>
@@ -119,21 +140,28 @@
 
  async function loadThreadMessages() {
   if (!CONFIG.activeThreadId) { return }
-  const { items } = await TMI.list([
+  const { items, isFile } = await TMI.list([
    '.private',
    CONFIG.activeThreadId
   ])
-  await renderMessages(items)
+  if (isFile) {
+   await TMI.createFolder([
+    '.private',
+    CONFIG.activeThreadId
+   ])
+  }
+  await renderMessages(items.filter(x => x.name !== 'thread'))
  }
 
  async function renderMessages(items) {
   const history = document.getElementById('history')
   history.innerHTML = ''
-  for (const item of items) {
+  await Promise.all(items.map(async (item) => {
    const messageContainer = document.createElement('div')
    history.appendChild(messageContainer)
-   renderMessage(messageContainer, item)
-  }
+   await renderMessage(messageContainer, item)
+  }))
+  history.scrollTop = 1e9
  }
 
  window.messageCache = {}
@@ -207,6 +235,9 @@
   }
   CONFIG.activeThreadId = threadId
   highlightActiveThread()
+  const data = await getThread(threadId)
+  document.getElementById('topic').value = data.topic ?? ''
+  document.getElementById('threadId').value = threadId
   await loadThreadMessages()
  }
  function highlightActiveThread() {
@@ -216,17 +247,49 @@
    ).classList.add('selected')
   }
  }
+ async function setTopic() {
+  const topic = document.getElementById('topic').value
+  await TMI.saveFile([
+   '.private',
+   CONFIG.activeThreadId,
+   'thread'
+  ], JSON.stringify({ topic }))
+  document.getElementById(
+   'thread:' + CONFIG.activeThreadId
+  ).innerText = topic
+ }
+ async function getThread(threadId) {
+  const { contents } = await TMI.list([
+   '.private',
+   threadId,
+   'thread'
+  ])
+  try {
+   return JSON.parse(contents)
+  } catch (e) {
+   return { }
+  }
+ }
+ async function renderThread(container, threadId) {
+  const data = await getThread(threadId)
+  container.innerText = data.topic?.length > 0
+   ? data.topic
+   : threadId.substring(0, 8)
+ }
  async function renderThreads(threads) {
   const threadList = document.getElementById('threadList')
   threadList.innerHTML = ''
   for (const threadId of threads) {
    const threadButton = document.createElement('button')
-   threadButton.innerText = threadId
+   renderThread(threadButton, threadId)
    threadButton.setAttribute('id', 'thread:'+threadId)
    threadButton.addEventListener('click', function () {
     setActiveThread(threadId)
    })
    threadList.appendChild(threadButton)
+   if (!CONFIG.activeThreadId) {
+    setActiveThread(threadId)
+   }
   }
   highlightActiveThread()
  }
