@@ -28,6 +28,11 @@
   display: flex;
   flex-direction: column;
  }
+ #threadList > button {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+ }
  .history {
   padding: 10px;
  }
@@ -393,9 +398,11 @@
  }
  async function renderThread(container, threadId) {
   const data = await getThread(threadId)
-  container.innerText = data.topic?.length > 0
+  const topic = data.topic?.length > 0
    ? data.topic
    : threadId.substring(0, 8)
+  container.setAttribute('title', topic)
+  container.innerText = topic
  }
  async function renderThreads(threads) {
   const threadList = document.getElementById('threadList')
