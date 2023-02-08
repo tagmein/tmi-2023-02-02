@@ -1,0 +1,51 @@
+<script>
+const canvas = document.createElement('canvas')
+document.body.appendChild(canvas)
+
+function resize() {
+ const W = window.innerWidth
+ const H = window.innerHeight
+ Object.assign(canvas.style, {
+  position: 'fixed',
+  zIndex: -1,
+  pointerEvents: 'none',
+  height: `${H}px`,
+  width: `${W}px`,
+  opacity: 0.75,
+ })
+
+ Object.assign(canvas, { width: W, height: H })
+ const stars = canvas.getContext('2d')
+
+ function big(i=1) {
+  return 1e1 + Math.floor(i * Math.random() * 1e2)
+ }
+ const peak = 10
+ let intensity = peak
+ let time = 0
+ const flare = () => {
+  time++
+  intensity = intensity * 0.9
+  if (intensity > 1e-6) {
+   requestAnimationFrame(flare)
+  }
+  else {}
+  for (const x in Array(big(intensity)).fill()) {
+   for (const y in Array(big()).fill()) {
+    stars.fillStyle = (x + y) % (peak * time)
+     ? '#00000079' : '#f8f8f8ff'
+    const s = Math.random() * Math.random() * Math.random() * 10
+    stars.fillRect(
+     Math.random() * W,
+     Math.random() * H,
+     s,
+     s,
+    )
+   }
+  }
+ }
+ flare()
+}
+window.addEventListener('resize', resize)
+resize()
+</script>

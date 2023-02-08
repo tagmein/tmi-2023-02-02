@@ -41,6 +41,7 @@
   padding: 10px;
   margin-top: 10px;
   position: relative;
+  word-break: break-word;
  }
  .history > div:first-of-type {
   margin-top: auto;

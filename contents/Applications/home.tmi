@@ -514,8 +514,24 @@ if (isFile) {
  <div class="container">
   ${TOOLBAR}
   <div class="toolbar">
-   <a target="_top" disabled="${mode === 'view'}" href="${href({ mode: 'view' })}">${path.endsWith('.tmi') ? 'Run' : 'View'}</a>
-   <a target="_top" disabled="${mode === 'edit'}" href="${href({ mode: 'edit' })}">Edit</a>
+   ${path.endsWith('.tmi')
+    ? `<a target="_blank" href="${href({ source: path })}">Launch</a>`
+    : ''
+   }
+   <a
+    target="_top"
+    disabled="${mode === 'view'}"
+    href="${href({ mode: 'view' })}"
+   >
+    ${path.endsWith('.tmi') ? 'Run' : 'View'}
+   </a>
+   <a
+    target="_top"
+    disabled="${mode === 'edit'}"
+    href="${href({ mode: 'edit' })}"
+   >
+    Edit
+   </a>
    <span class="spacer"></span>
    ${tools}
   </div>

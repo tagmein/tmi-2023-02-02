@@ -5,6 +5,18 @@
 <div id="outcome">&nbsp;</div>
 
 <style>
+ @keyframes roll {
+  0%   {transform: rotate(300deg);}
+  25%  {transform: rotate(600deg);}
+  50%  {transform: rotate(900deg);}
+  100% {transform: rotate(0deg);}
+ }
+
+ #outcome.roll {
+  animation-name: roll;
+  animation-duration: 0.369s;
+ }
+
  #outcome {
   background-color: #e8e8e8;
   padding: 1rem;
@@ -27,5 +39,7 @@
 
   roll.addEventListener('click', () => {
     outcome.innerHTML = Math.floor((Math.random() * sides.value)) + 1
+    outcome.classList.add("roll")
+    setTimeout(function() { outcome.classList.remove("roll") }, 369)
   })
 </script>
