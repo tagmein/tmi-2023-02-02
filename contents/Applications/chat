@@ -88,6 +88,43 @@
   border-left: 1px solid #797979;
   background-color: #202020;
  }
+ .vote {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+ }
+ .vote button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+ }
+ .vote button:last-of-type {
+  position: absolute;
+  left: 0;
+  bottom: 27px;
+ }
+ .vote button:hover {
+  background-color: #000000;
+ }
+ .vote span {
+  padding: 0 10px 0 0;
+  font-weight: bold;
+  position: relative;
+  top: -9px;
+ }
+ .history > div[data-vote="0"] .vote span {
+  opacity: 0;
+ }
+ .history > div:hover .vote button, 
+ .history > div:hover .vote span {
+  opacity: 1;
+ }
  *:focus {
   outline: none;
   box-shadow: inset 0 0 0 4px #ffffff79;
@@ -193,7 +230,7 @@
     const messageContainer = document.createElement('div')
     messageContainer.setAttribute('id', key)
     history.appendChild(messageContainer)
-    await renderMessage(messageContainer, item)
+    await renderMessage(messageContainer, activeThreadId, item)
    }
   }))
   if (shouldScroll) {
@@ -202,22 +239,32 @@
  }
 
  window.messageCache = {}
- async function renderMessage(container, item) {
-  const { activeThreadId } = CONFIG
+ 
+ async function loadItem(activeThreadId, name) {
+  const { contents } = await TMI.list([
+   '.private',
+   activeThreadId,
+   name
+  ])
+  try {
+   return JSON.parse(contents)
+  } catch (e) {
+   return { message: e.message }
+  }
+ }
+
+ async function saveItem(activeThreadId, name, data) {
+  await TMI.saveFile([
+   '.private',
+   activeThreadId,
+   name
+  ], JSON.stringify(data))
+ }
+ 
+ async function renderMessage(container, activeThreadId, item) {
   const key = `${activeThreadId}:${item.name}`
   if (!(key in messageCache)) {
-   const { contents } = await TMI.list([
-    '.private',
-    activeThreadId,
-    item.name
-   ])
-   messageCache[key] = (() => {
-    try {
-     return JSON.parse(contents)
-    } catch (e) {
-     return { message: e.message }
-    }
-   })()
+   messageCache[key] = await loadItem(activeThreadId, item.name)
   }
   const data = messageCache[key]
   const name = document.createElement('h4')
@@ -230,6 +277,36 @@
   container.appendChild(time)
   container.appendChild(name)
   container.appendChild(messageContent)
+  renderVotes(container, activeThreadId, item, data)
+ }
+
+ async function renderVotes(container, activeThreadId, item, data) {
+  const voteContainer = document.createElement('div')
+  voteContainer.classList.add('vote')
+  const vote = document.createElement('span')
+  const down = document.createElement('button')
+  const up = document.createElement('button')
+  down.innerHTML = '&#x25BC;'
+  up.innerHTML = '&#x25B2;'
+  vote.innerText = `${data.vote > 0 ? '+' : ''}${data.vote ?? 0}`
+  container.setAttribute('data-vote', data.vote ?? 0)
+  container.appendChild(voteContainer)
+  voteContainer.appendChild(down)
+  voteContainer.appendChild(vote)
+  voteContainer.appendChild(up)
+  down.setAttribute('title', 'Downvote')
+  up.setAttribute('title', 'Upvote')
+  function updateVotes(by) {
+   return async function () {
+    const newItem = await loadItem(activeThreadId, item.name)
+    newItem.vote = (newItem.vote ?? 0) + by
+    await saveItem(activeThreadId, item.name, newItem)
+    vote.innerText = `${newItem.vote > 0 ? '+' : ''}${newItem.vote ?? 0}`
+    container.setAttribute('data-vote', newItem.vote)
+   }
+  }
+  down.addEventListener('click', updateVotes(-1))
+  up.addEventListener('click', updateVotes(1))
  }
 
  setInterval(loadThreadMessages, 5000)
