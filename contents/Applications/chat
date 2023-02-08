@@ -103,7 +103,7 @@
    <input id="threadId" readonly title="Share this thread id for others to join" />
   </div>
   <div class="history" id="history"></div>
-  <input placeholder="enter name" id="name" />
+  <input placeholder="enter name" id="name" onchange="saveThreadName()" />
   <textarea placeholder="enter message" id="message" onkeydown="messageKey(event)"></textarea>
   <button onclick="sendMessage()">send</button>
  </div>
@@ -136,6 +136,26 @@
   await renderThreads(newThreads)
  }
 
+ async function getThreadName() {
+  const { activeThreadId } = CONFIG
+  if (!activeThreadId) { return }
+  const { contents } = await TMI.list(
+   ['.private', TMI.clientKey, `thread:${activeThreadId}:name`]
+  )
+  const nameElement = document.getElementById('name')
+  nameElement.value = contents
+ }
+
+ async function saveThreadName() {
+  const { activeThreadId } = CONFIG
+  if (!activeThreadId) { return }
+  const nameElement = document.getElementById('name')
+  await TMI.saveFile(
+   ['.private', TMI.clientKey, `thread:${activeThreadId}:name`],
+   nameElement.value
+  )
+ }
+ 
  async function getThreads() {
   const { contents } = await TMI.list(CONFIG.THREADS)
   return contents.split('\n')
@@ -143,28 +163,36 @@
  }
 
  async function loadThreadMessages() {
-  if (!CONFIG.activeThreadId) { return }
+  const { activeThreadId } = CONFIG
+  if (!activeThreadId) {
+   return
+  }
   const { items, isFile } = await TMI.list([
-   '.private',
-   CONFIG.activeThreadId
+   '.private', activeThreadId
   ])
   if (isFile) {
    await TMI.createFolder([
-    '.private',
-    CONFIG.activeThreadId
+    '.private', activeThreadId
    ])
   }
-  await renderMessages(items.filter(x => x.name !== 'thread'))
+  await renderMessages(activeThreadId, items.filter(x => x.name !== 'thread'))
  }
 
- async function renderMessages(items) {
+ async function renderMessages(activeThreadId, items) {
   const history = document.getElementById('history')
   const shouldScroll = history.childElementCount === 0
-  history.innerHTML = ''
   await Promise.all(items.map(async (item) => {
-   const messageContainer = document.createElement('div')
-   history.appendChild(messageContainer)
-   await renderMessage(messageContainer, item)
+   const key = `${activeThreadId}:${item.name}`
+   const existingMessageContainer = document.getElementById(key)
+   if (activeThreadId !== CONFIG.activeThreadId) {
+    return // thread has changed
+   }
+   if (!existingMessageContainer) {
+    const messageContainer = document.createElement('div')
+    messageContainer.setAttribute('id', key)
+    history.appendChild(messageContainer)
+    await renderMessage(messageContainer, item)
+   }
   }))
   if (shouldScroll) {
    history.scrollTop = 1e9
@@ -235,6 +263,7 @@
   await loadThreadMessages()
  }
  async function setActiveThread(threadId) {
+  document.getElementById('history').innerHTML = ''
   if (CONFIG.activeThreadId) {
    document.getElementById(
     'thread:' + CONFIG.activeThreadId
@@ -245,7 +274,10 @@
   const data = await getThread(threadId)
   document.getElementById('topic').value = data.topic ?? ''
   document.getElementById('threadId').value = threadId
-  await loadThreadMessages()
+  await Promise.all([
+   loadThreadMessages(),
+   getThreadName()
+  ])
  }
  function highlightActiveThread() {
   if (CONFIG.activeThreadId) {

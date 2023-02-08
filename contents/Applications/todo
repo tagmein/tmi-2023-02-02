@@ -1,7 +1,7 @@
 <div id="todoList"></div>
 <style>
  .todoItem {
-  padding: 20px;
+  padding: 0 10px;
   display: flex;
   flex-direction: row;
  }
@@ -26,9 +26,9 @@
  .todoItem button:hover {
   background-color: #404040;
  }
- .todoItem span {
+ .date {
+  white-space: pre;
   font-size: 14px;
-  max-width: 100px;
   padding: 0 10px;
  }
 </style>
@@ -58,8 +58,8 @@
      value=${JSON.stringify(data.title)}
      onchange="editTodo('${data.id}', event)"
     />
-    <span title="Created at">${new Date(data.created).toLocaleString().replace(',', '')}</span>
-    <span title="Edited at">${new Date(data.edited).toLocaleString().replace(',', '')}</span>
+    <span class="date" title="Created at">${new Date(data.created).toLocaleString().replace(',', '')}</span>
+    <span class="date" title="Edited at">${new Date(data.edited).toLocaleString().replace(',', '')}</span>
     <button onclick="deleteTodo('${data.id}')">🗑</button>
    </div>
   `
