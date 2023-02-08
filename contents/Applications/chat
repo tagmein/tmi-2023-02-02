@@ -159,13 +159,16 @@
 
  async function renderMessages(items) {
   const history = document.getElementById('history')
+  const shouldScroll = history.childElementCount === 0
   history.innerHTML = ''
   await Promise.all(items.map(async (item) => {
    const messageContainer = document.createElement('div')
    history.appendChild(messageContainer)
    await renderMessage(messageContainer, item)
   }))
-  history.scrollTop = 1e9
+  if (shouldScroll) {
+   history.scrollTop = 1e9
+  }
  }
 
  window.messageCache = {}
