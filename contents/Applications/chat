@@ -180,7 +180,8 @@
 
  async function renderMessages(activeThreadId, items) {
   const history = document.getElementById('history')
-  const shouldScroll = history.childElementCount === 0
+  const shouldScroll = history.childElementCount === 0 ||
+   history.scrollTop === history.scrollTopMax
   await Promise.all(items.map(async (item) => {
    const key = `${activeThreadId}:${item.name}`
    const existingMessageContainer = document.getElementById(key)
@@ -245,6 +246,7 @@
   if (message.trim().length === 0) {
    return
   }
+  messageElement.setAttribute('disabled', 'disabled')
   const timestamp = Date.now()
   const fileName = timestamp.toString(10) +
    (Math.floor(Math.random() * 1e9).toString(10) + '000000')
@@ -260,6 +262,8 @@
    fileName
   ], packedMessage)
   messageElement.value = ''
+  messageElement.removeAttribute('disabled')
+  messageElement.focus()
   await loadThreadMessages()
  }
  async function setActiveThread(threadId) {

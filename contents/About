@@ -42,3 +42,12 @@
 
  <p>Thank you for being a part of this community. Your friend, Nate.</p>
 </section>
+
+<p><a target="_top" id="private">View my directory</a></p>
+
+<script>
+ document.getElementById('private').setAttribute(
+  'href',
+  `#${btoa(JSON.stringify({ path: ['.private', TMI.clientKey ].join('/') }))}`
+ )
+</script>
