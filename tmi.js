@@ -341,6 +341,7 @@ const STATIC = {
  <meta charset="utf-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  <link rel="stylesheet" type="text/css" href="/main.css" />
+ <link id="favicon" rel="shortcut icon" type="image/png" href=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAKElEQVQI12NgAAJ5BgYWEGJSYWBOYWB+wsC0n6FOgUEIjAQYEIiBAQBbsQOfidSbZAAAAABJRU5ErkJggg==" />
 </head>
 <body class="tagmein">
  <div id="main"><h2>Tag Me In</h2><p>Loading</p></div>
