@@ -6,9 +6,10 @@
   min-height: 100vh;
   box-sizing: border-box;
   overflow: hidden;
+  background-color: blue;
  }
  #clock {
-  font-size: 80px;
+  font-size: 50px;
   text-align: center;
  }
 </style>

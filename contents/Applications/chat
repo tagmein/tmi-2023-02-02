@@ -61,7 +61,14 @@
  }
  textarea {
   resize: none;
-  height: 120px;
+  height: 106px;
+  padding-right: 74px;
+ }
+ .messages button:last-of-type {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-left: 1px solid #797979;
  }
  textarea, input {
   flex-shrink: 0;
