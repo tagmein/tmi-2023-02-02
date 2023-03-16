@@ -5,9 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.cdnfonts.com/css/games" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
     <title>snake game</title>
     <style>
+
         .table {
             width: 100%;
             max-width: 100%;
@@ -24,6 +26,9 @@
             background-color: rgba(0, 0, 0, 0.05);
         }
 
+        table th{
+            text-align: left !important;
+        }
         .table thead th {
             vertical-align: bottom;
             border-bottom: 2px solid #eceeef;
@@ -47,71 +52,6 @@
             justify-content: center;
             align-content: center;
         }
-        .my-game-section{
-            width: 59%;
-            margin-left: 1%;
-            float: left;
-            min-height: 640px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-content: center;
-        }
-        .my-game-section:first-child{
-            width: 39%;
-            min-width: 150px;
-            margin-left: 1%;
-            float: left;
-            min-height: 640px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-content: center;
-        }
-        .my-game-section canvas{
-            width: 640px;
-            height: 640px;
-        }
-        .game-buttons{
-            width: 100%;
-            min-height: 60px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-
-        }
-        .game-buttons button{
-            width: 80%;
-            height: 60px;
-            display: inline-block;
-            background-color: blue;
-            color: white;
-            font-size: 1.2em;
-            border: unset;
-            margin-bottom: 5px;
-        }
-       
-        .game-scores{
-            width: 100%;
-            height: 540px;
-            overflow: auto;
-            /*display: none;*/
-        }
-        .game-scores-header{
-            width: 100%;
-            height: 50px;
-            font-weight: bolder;
-            font-size: 2em;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-content: center;
-        }
-        .game-scores-body{
-            width: 100%;
-            display: inline-block;
-            height: 420px;
-        }
         body{
             margin: 0px;
             padding: 0px;
@@ -124,21 +64,127 @@
         }
         canvas{
             font-family: 'Games', sans-serif !important;
+            border: 1px solid black;
         }
         button{
             font-family: 'Games', sans-serif !important;
         }
         canvas{
-            box-shadow: black 10px 10px 50px; /*elevate our canvas*/
             font-family: 'Games', sans-serif !important;
         }
+        .game-section-new{
+            width: 66%;
+            overflow: auto;
+            float: left;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            /*background-color: pink;*/
+        }
+        .game-section-new:first-child{
+            width: 30%;
+            float: left;
+            display: flex;
+        }
+        .gameBoard{
+            display: none;
+            cursor: none;
+        }
+        .game-section-container{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+        }
+        .game-section-new .game-section-buttons{
+            width: 90%;
+            height: 150px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            /*background-color: saddlebrown;*/
+        }
+
+        .game-section-new .game-section-buttons button{
+            width: 80%;
+            height: 60px;
+            display: inline-block;
+            background-color: blue;
+            color: white;
+            font-size: 1.2em;
+            border: unset;
+            margin-bottom: 5px;
+        }
+        .game-section-new .game-section-buttons button:last-child{
+            background-color: saddlebrown;
+        }
+        .topScores{
+            display: none;
+            background-color: #800080;
+        }
+        .topScores .game-scores-header{
+            width: 90%;
+            margin-left: 5%;
+            margin-right: 5%;
+            display: block;
+            height: 100px;
+            line-height: 100px;
+            font-weight: bolder;
+            font-size: 2em;
+            text-align: center;
+            color: whitesmoke;
+        }
+        #backToGame{
+            display: none;
+        }
+
+        @media only screen and (max-width: 1306px) {
+            /* CSS rules go here */
+            .my-game{
+                width: 100%;
+            }
+            .game-section-new{
+                width: 100%;
+                /*background-color: #0b5885;*/
+            }
+           
+        }
+
+        @media only screen and (max-width: 600px) {
+            .game-section-new{
+                width: 100%;
+            }
+            .game-section-new:first-child{
+                width: 50%;
+                float: left;
+                display: flex;
+            }
+        }
+
     </style>
 </head>
 <body>
-
 <div class="my-game">
-    <div class="my-game-section">
-        <div class="game-scores">
+    <div class="game-section-new">
+        <div class="game-section-buttons">
+            <button id="newGame">Start New Game</button>
+            <button id="backToGame">Back</button>
+            <button id="topScores">Top 100 Scores</button>
+        </div>
+    </div>
+
+    <div class="game-section-new gameBoard">
+        <div class="game-section-container">
+            <canvas width="640" height="640" id="game"></canvas>
+        </div>
+    </div>
+
+    <div class="game-section-new topScores" style="overflow:hidden;">
+        <div class="game-section-container" style="padding: 10px; display: block !important;" >
             <div class="game-scores-header">
                 Top 100 Scores
             </div>
@@ -146,320 +192,302 @@
 
             </div>
         </div>
-        <div class="game-buttons">
-            <button id="newGame">Start New Game</button>
-<!--            <button>View Top 100 Scores</button>-->
-        </div>
-    </div>
-    <div class="my-game-section">
-        <canvas id="game" width="640" height="640"></canvas>
     </div>
 </div>
-
-<!--<script src="game.js"></script>-->
-
+</body>
 <script>
-    const canvas=document.getElementById('game');
-    const ctx=canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
+    // Initialize the canvas and context
+    let canvas = document.getElementById('game');
+    let ctx = canvas.getContext('2d');
+
     const baseFolder = ['.private', TMI.clientKey, 'Snake'];
     async function main() {
         await TMI.createFolder(baseFolder);
     }
     main();
 
-    class SnakePart{
-        constructor(x, y){
-            this.x=x;
-            this.y=y;
-        }
-    }
-
-    let gameIsRunning = false;
-    let speed=5;
-    let tileCount=32;
-    let tileSize=(canvas.clientWidth/tileCount)-2;
-    let headX=16;
-    let headY=16;
-    let newGame = true;
-
-    const snakeParts=[];
-    let tailLength=0;
-
-    let xvelocity=0;
-    let yvelocity=0;
-
-    let remonX=Math.round(Math.random() * tileCount);
-    let remonY=Math.round(Math.random() * tileCount);
-
-    let score=0;
+    // Initialize game variables
+    const tileSize = 10;
+    const boardSize = 64;
+    let snake = [{x: 32, y: 32}];
+    let food = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)};
+    let direction = 'right';
+    let score = 0;
 
 
-    function drawGame(){
+    class SNAKE {
 
-        changeSnakePosition();
-        let result = isGameOver();
-        if(result){
-            saveScore();
-            return;
+
+        drawScore() {
+
+            ctx.fillStyle = 'white';
+            ctx.font = "20px 'Games', sans-serif";
+
+            // Calculate position based on canvas dimensions
+            const marginTop = Math.max(40, canvas.height * 0.01); // Set minimum margin of 10 pixels
+            const marginLeft = Math.max(30, canvas.width * 0.01); // Set minimum margin of 10 pixels
+            const textWidth = ctx.measureText(`Score: ${score}`).width;
+            const x = canvas.width - textWidth - marginLeft;
+            const y = marginTop;
+
+            // Draw score at calculated position
+            ctx.fillText(`Score: ${score}`, x, y);
         }
 
-        clearScreen();
-        drawSnake();
-        drawRemon();
-        checkCollision()
-        drawScore();
-        setTimeout(drawGame, 1000/speed);
-    }
+        resizeCanvas() {
 
+            const windowHeight = window.innerHeight;
+            $('.game-section-new').innerHeight(windowHeight);
+            $('.game-section-container').innerHeight(windowHeight);
+            const mainGameWidth = $('.game-section-container').innerWidth();
+            const mainGameHeight = $('.game-section-container').innerHeight();
 
-    function isGameOver(){
-        let gameOver=false;
-
-        //check whether game has started
-        if(yvelocity===0 && xvelocity===0){
-            return false;
-        }
-        //if snake hits left wall
-        if(headX<0){
-            gameOver=true;
-        }
-        //if snake hits right wall
-        else if(headX===tileCount){
-            gameOver=true;
-        }
-        //if snake hits wall at the top
-        else if(headY<0){
-            gameOver=true;
-        }
-        //if snake hits wall at the bottom
-        else if(headY===tileCount){
-            gameOver=true;
-        }
-
-        //stop game when snake crush to its own body
-
-        for(let i=0; i<snakeParts.length;i++){
-            let part=snakeParts[i];
-            if(part.x===headX && part.y===headY){//check whether any part of snake is occupying the same space
-                gameOver=true;
-                break; // to break out of for loop
+            const canvas = document.getElementById('game');
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasRatio = canvasRect.height / canvasRect.width;
+            const windowRatio = mainGameHeight / mainGameWidth;
+            let width;
+            let height;
+            if (windowRatio < canvasRatio) {
+                height = mainGameHeight;
+                width = height / canvasRatio;
+            } else {
+                width = mainGameWidth;
+                height = width * canvasRatio;
             }
-        }
-        //display text Game Over
-        if(gameOver){
-            gameIsRunning = false;
-            ctx.fillStyle="white";
-            ctx.font="50px 'Games', sans-serif";
-            ctx.fillText("Game Over! ", canvas.clientWidth/6.5, canvas.clientHeight/2);//position our text in center
-        }
+            if (width > 640) width = width-2;
+            if (height > 640) height = height-2;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
 
-        return gameOver;
-    }
-
-    function drawScore(){
-        ctx.fillStyle="white";
-        ctx.fontWeight ="bolder";
-        ctx.font="20px 'Games', sans-serif";
-        ctx.fillText("Score: " +score, canvas.clientWidth-100,20);
-    }
-
-    // clear our screen
-    function clearScreen(){
-
-        ctx.fillStyle= 'purple'// make screen black
-        ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);
-    }
-
-    function drawSnake(){
-
-        ctx.fillStyle = "green";
-        for(let i = 0; i < snakeParts.length; i++){
-            let part = snakeParts[i];
-            let adjusted = tileSize+2
-            ctx.fillRect(part.x * adjusted, part.y * adjusted, tileSize, tileSize);
+            //draw the new scores
+            ctx.fillStyle = 'white';
+            ctx.font="20px 'Games', sans-serif";
+            ctx.fillText(`Score : ${score}`,canvas.clientWidth-130,35);
         }
 
-        snakeParts.push(new SnakePart(headX, headY));
-        if(snakeParts.length > tailLength){
-            snakeParts.shift();
-        }
 
-        ctx.fillStyle = "black";
-        let adjusted = tileSize+2;
-        ctx.fillRect(headX * adjusted, headY * adjusted, tileSize, tileSize);
-    }
+        showScores(){
 
+            $('.topScores,#backToGame').css({
+                display:'block'
+            });
 
-
-    function changeSnakePosition(){
-        headX=headX + xvelocity;
-        headY=headY+ yvelocity;
-
-    }
-    function drawRemon(){
-        ctx.fillStyle="red";
-        let adjusted = tileSize+2
-        ctx.fillRect(remonX*adjusted, remonY*adjusted, tileSize, tileSize)
-    }
-
-
-    function checkCollision(){
-        if(remonX==headX && remonY==headY){
-            remonX=Math.floor(Math.random()*tileCount);
-            remonY=Math.floor(Math.random()*tileCount);
-            tailLength++;
-            score++; //increase our score value
+            $('.gameBoard,#topScores,#newGame').css({
+                display:'none'
+            });
+            $('.game-section-new:first-child').css({display:'flex'});
 
         }
-    }
 
-    document.body.addEventListener('keydown', keyDown);
+        hideScores(){
 
-    async function keyDown(e) {
-        e.preventDefault();
-        if (!gameIsRunning) return;
-        if(event.keyCode==38){
-            //prevent snake from moving in opposite direcction
-            if(yvelocity==1) return;
-            yvelocity=-1;
-            xvelocity=0;
-        }
-        //down
-        if(event.keyCode==40){
-            if(yvelocity==-1)
-                return;
-            yvelocity=1;
-            xvelocity=0;
+            $('.topScores,#backToGame').css({
+                display:'none'
+            });
+
+            $('#topScores,#newGame').css({
+                display:'block'
+            });
+
         }
 
-        //left
-        if(event.keyCode==37){
-            if(xvelocity==1)
-                return;
-            yvelocity=0;
-            xvelocity=-1;
-        }
-        //right
-        if(event.keyCode==39){
-            if(xvelocity==-1)
-                return;
-            yvelocity=0;
-            xvelocity=1;
-        }
-    }
-
-    async function saveScore(){
-
-        if (score <= 100){
-            const data = await TMI.list([...baseFolder, 'list']);
-
+       async saveScore(){
+           const data = await TMI.list([...baseFolder, 'list']);
             const contents  = data.contents;
             let items = contents?.length > 2 ? JSON.parse(contents) : [];
 
-            setTimeout(async function () {
-                let name = prompt("Please provide your name");
-                if (name){
-
-                    items.push({name,score,id:Date.now()});
-                    await TMI.saveFile([...baseFolder, 'list'], JSON.stringify(items));
-                    await displayHighScores();
-                }
+            await setTimeout(async function () {
+              return;
             },100);
+
+           let name = prompt("Please provide your name");
+           if (name){
+               items.push({name,score,id:Date.now()});
+               await TMI.saveFile([...baseFolder, 'list'], JSON.stringify(items));
+               await this.displayHighScores();
+           }else{
+               $('.gameBoard').css({display:'none'});
+               $('.game-section-new:first-child').css({display:'flex'});
+           }
+
         }
-    }
+
+        async displayHighScores() {
+
+            const { contents } = await TMI.list([...baseFolder, 'list'])
+            let items = contents?.length > 2 ? JSON.parse(contents) : [];
+            if (items.length > 0) {
+                let td = "<table class='table table-striped'>";
+                td += '<thead><tr><th>No</th><th>Name</th><th>Scores</th></tr></thead><tbody>';
 
 
-    async function displayHighScores(){
+                items.sort(function (a, b) {
+                    let score1 = a.score;
+                    let score2 = b.score;
+                    return score2 - score1;
+                });
 
-        const { contents } = await TMI.list([...baseFolder, 'list'])
-        let items = contents?.length > 2 ? JSON.parse(contents) : [];
-        if (items.length > 0){
-            let td = "<table class='table table-striped'>";
-            td +='<thead><tr><th>No</th><th>Name</th><th>Scores</th></tr></thead><tbody>';
+                items.forEach(function (item, index) {
+                    if (index <= 100) {
+                        index = index + 1;
+                        td += "<tr>";
+                        td += "<td>" + index + '</td>';
+                        td += "<td>" + item.name + '</td>';
+                        td += "<td>" + item.score + '</td>';
+                        td += "</tr>";
+                    }
+                })
+                td += '</tbody></table>';
 
+                this.showScores();
+                document.querySelector('.game-scores-body').innerHTML = td;
+            }
+        }
 
-            items.sort(function (a,b) {
-                let score1 = a.score;
-                let score2 = b.score;
-                return score2 - score1;
+        // Draw the snake and food
+        draw() {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle="#800080";
+            ctx.fillRect(0,0,canvas.width,canvas.width);
+            // Draw the snake
+            ctx.fillStyle = 'black';
+            snake.forEach((segment) => {
+                ctx.fillRect(segment.x * tileSize, segment.y * tileSize, tileSize, tileSize);
             });
 
-            items.forEach(function (item,index) {
-                if (index <= 100){
-                    index = index+1;
-                    td +="<tr>";
-                    td +="<td>"+index+'</td>';
-                    td +="<td>"+item.name+'</td>';
-                    td +="<td>"+item.score+'</td>';
-                    td +="</tr>";
-                }
-            })
-            td += '</tbody></table>';
-            console.log(td);
-            document.querySelector('.game-scores-body').innerHTML = td;
+            // Generate a new food position that is not already occupied by the snake
+            let foodPosition = food;
+            while (foodPosition === null || this.isSegmentOnPosition(snake, foodPosition)) {
+                foodPosition = {
+                    x: Math.floor(Math.random() * boardSize),
+                    y: Math.floor(Math.random() * boardSize)
+                };
+            }
+
+            // Draw the food
+            ctx.fillStyle = 'red';
+            ctx.fillRect(foodPosition.x * tileSize, foodPosition.y * tileSize, tileSize, tileSize);
+
+            // // Draw the score
+            // ctx.fillStyle = 'white';
+            // ctx.font="20px 'Games', sans-serif";
+            // ctx.fillText(`Score : ${score}`,canvas.clientWidth-130,35);
+
+            this.drawScore();
+
         }
+
+        isSegmentOnPosition(segments, position) {
+            return segments.some(segment => segment.x === position.x && segment.y === position.y);
+        }
+
+        async move() {
+            // Get the head of the snake
+            let head = {x: snake[0].x, y: snake[0].y};
+
+            // Move the head in the current direction
+            if (direction === 'up') {
+                head.y--;
+            } else if (direction === 'down') {
+                head.y++;
+            } else if (direction === 'left') {
+                head.x--;
+            } else if (direction === 'right') {
+                head.x++;
+            }
+
+            // Check if the head has collided with the food
+            if (head.x === food.x && head.y === food.y) {
+                // Increase the score
+                score++;
+
+                // Generate new food
+                food = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)};
+            } else {
+                // Remove the tail of the snake
+                snake.pop();
+            }
+
+            // Check if the head has collided with the wall or with itself
+            if (head.x < 0 || head.x >= boardSize || head.y < 0 || head.y >= boardSize || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                clearInterval(interval);
+
+                ctx.fillStyle = "white";
+                ctx.font = "40px 'Games', sans-serif";
+                ctx.fillText("Game Over!", canvas.clientWidth / 2 - ctx.measureText("Game Over!").width / 2, canvas.clientHeight / 2.3);
+
+                ctx.font = "30px 'Games', sans-serif";
+                const scoreText = "Your Score is: " + score;
+                ctx.fillText(scoreText, canvas.clientWidth / 2 - ctx.measureText(scoreText).width / 2, canvas.clientHeight / 2);
+
+                await this.saveScore();
+
+            } else {
+                // Add the new head to the snake
+                snake.unshift(head);
+
+                // Draw the game
+                this.draw();
+            }
+            return 0;
+        }
+
     }
-    drawGame();
-    let data = document.querySelector('.my-game');
 
-    document.querySelector('#newGame').addEventListener('click',function () {
-
-        yvelocity=-1;
-        xvelocity=0;
-
-        if (gameIsRunning){
-            restartGame();
-        }else{
-            gameIsRunning = true;
+    // Handle key presses
+    $(window).keydown(function (event) {
+        event.preventDefault();
+        if (event.key === 'ArrowUp' && direction !== 'down') {
+            direction = 'up';
+        } else if (event.key === 'ArrowDown' && direction !== 'up') {
+            direction = 'down';
+        } else if (event.key === 'ArrowLeft' && direction !== 'right') {
+            direction = 'left';
+        } else if (event.key === 'ArrowRight' && direction !== 'left') {
+            direction = 'right';
         }
-
-        if (!newGame){
-            newGame = false;
-            ctx.fillStyle = "white";
-            restartGame();
-            yvelocity=-1;
-            xvelocity=0;
-            gameIsRunning = true;
-        }else{
-            newGame = false;
-        }
-
     });
 
-    function restartGame() {
+    // Start the game loop
+    let newSnake = new SNAKE();
+    let interval = false;
 
-        if (isGameOver()){
-            headX = 16;
-            headY = 16;
+    window.addEventListener('resize', newSnake.resizeCanvas);
+    newSnake.resizeCanvas();
+    ctx.fillStyle="#800080";
+    ctx.fillRect(0,0,canvas.width,canvas.width);
 
-            xvelocity = 0;
-            yvelocity = 0;
+    $(function () {
+       $('#newGame').click(function () {
 
-            remonX = Math.round(Math.random() * tileCount);
-            remonY = Math.round(Math.random() * tileCount);
+           $('#topScores').css({display:'block'});
+           $('.gameBoard').css({display:'flex'});
+           $('.game-section-new:first-child').css({display:'none'});
 
-            tailLength = 0;
-            score = 0;
-            snakeParts.length = 0;
-            drawGame();
-        }else{
-            headX = 16;
-            headY = 16;
+            canvas = document.getElementById('game');
+            ctx = canvas.getContext('2d');
+            ctx.fillStyle="#800080";
+            ctx.fillRect(0,0,canvas.width,canvas.width);
 
-            xvelocity = 0;
-            yvelocity = 0;
+           newSnake.resizeCanvas();
+           clearInterval(interval);
 
-            remonX = Math.round(Math.random() * tileCount);
-            remonY = Math.round(Math.random() * tileCount);
+            snake = [{x: 32, y: 32}];
+            food = {x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize)};
+            interval = setInterval(()=>newSnake.move(), 100);
+       });
 
-            tailLength = 0;
-            score = 0;
-            snakeParts.length = 0;
-        }
-    }
-    displayHighScores();
+        $('#backToGame').click(function () {
+            newSnake.hideScores();
+        });
+
+        $('#topScores').click(async function () {
+            newSnake.showScores();
+            await newSnake.displayHighScores();
+            clearInterval(interval);
+        });
+    });
+
 </script>
-</body>
-</html>
-

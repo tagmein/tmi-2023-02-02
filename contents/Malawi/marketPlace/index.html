@@ -1,0 +1,939 @@
+<!Doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Market Place</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="">
+    <meta name="msapplication-tap-highlight" content="no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link href="assets/styles.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+    <style>
+        .appText{
+            color: #28a745;
+        }
+        html{
+            padding: unset !important;
+            margin: unset !important;
+            background-color: white !important;
+        }
+        body{
+            padding: unset !important;
+            margin: unset !important;
+        }
+        .app{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .app-header{
+            width: 100%;
+            height: 150px;
+            display: inline-block;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+        .app-container{
+            width: 80%;
+            min-height: 150px;
+            display: inline-block;
+            margin-left: 10%;
+        }
+        .app-header .app-logo-section{
+            width: 20%;
+            height: 150px;
+            float: left;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-weight: bolder;
+            font-size: 1.4em;
+            text-transform: uppercase;
+            border-right: 1px solid rgba(0, 0, 0, 0.18);
+        }
+        .app-header .app-info-section{
+            width: 80%;
+            height: 150px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            float: left;
+        }
+        .app-header .app-info-section .app-info-top{
+            width: 100%;
+            height: 95px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+        }
+        .app-header .app-info-section .app-info-bottom{
+            width: 100%;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section{
+            width: 25%;
+            height: 95px;
+            display: block;
+            float: left;
+            padding-left: 10px;
+            padding-right: 10px;
+            position: relative;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:first-child{
+            width: 45%;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:first-child span{
+            position: absolute;
+            top:48%;
+            left: 5%;
+            z-index: 989999;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:first-child input{
+            border-radius: unset !important;
+            padding-left: 40px;
+        }
+
+        .app-header .app-info-section .app-info-top .app-info-top-section:first-child .input-group{
+            margin-top: 30px;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:first-child button{
+            border-radius: unset !important;
+        }
+
+        .app-header .app-info-section .app-info-top .app-info-top-section:nth-child(2) div:first-child{
+            width: 100%;
+            height: 40px;
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-weight: bolder;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:nth-child(2) div:last-child{
+            width: 100%;
+            font-size: 1.2em;
+            height: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            opacity: .8;
+        }
+
+        .app-header .app-info-section .app-info-top .app-info-top-section:nth-child(2){
+            border-right: 1px solid rgba(0, 0, 0, 0.22);
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:nth-child(3) div:first-child{
+            width: 100%;
+            height: 40px;
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-weight: bolder;
+        }
+        .app-header .app-info-section .app-info-top .app-info-top-section:nth-child(3) div:last-child{
+            width: 100%;
+            font-size: 1.2em;
+            height: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            opacity: .8;
+        }
+        .app-info-bottom ul{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            text-transform: uppercase;
+            list-style-type: none;
+        }
+        .app-info-bottom ul li{
+            min-width: 80px;
+            cursor: pointer;
+        }
+
+
+        .app-main-body{
+            width: 100%;
+            min-height: 500px;
+            display: inline-block;
+        }
+        .app-main-body .app-main-body-section{
+            width: 30%;
+            margin-top: 50px;
+            min-height: 500px;
+            display: inline-block;
+            float: left;
+        }
+        .app-main-body .app-main-body-section:first-child{
+            width: 70%;
+        }
+        .app-main-body .app-main-body-section .app-main-body-header{
+            width: 90%;
+            margin-left: 5%;
+            height: 100px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-weight: bolder;
+            font-size: 1.5em;
+        }
+        .app-main-body .app-main-body-section .app-main-body-header > div:first-child{
+            width: 10%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+        .app-main-body .app-main-body-section .app-main-body-header > div:last-child{
+            width: 90%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+
+        .app-main-body .app-main-body-section .app-main-body-body{
+            width: 90%;
+            margin-left: 5%;
+            min-height: 100px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+        .app-main-body-info-caption{
+            width: 100%;
+            padding-left: 1%;
+            margin-bottom: 10px;
+            height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            background-color: #fff;
+            color: #28a745;
+            font-weight: bolder;
+            text-transform: uppercase;
+            border: 1px solid rgba(40, 167, 69, 0.37);
+        }
+
+        .app-main-product-card{
+            width: 31.3%;
+            height: 250px;
+            display: inline-block;
+            float: left;
+            margin-bottom: 20px;
+            margin-left: 1%;
+            margin-right: 1%;
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+            cursor: pointer;
+        }
+        .app-main-product-card:hover{
+            transform: scale(.9,.9);
+            transition: .1s ease-in-out;
+        }
+        .app-main-product-card .app-main-product-image{
+            width: 100%;
+            height: 180px;
+            display: inline-block;
+        }
+        .app-main-product-card .app-main-product-image img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .app-main-product-card .app-main-product-info-box{
+            width: 90%;
+            margin-left: 5%;
+            overflow: hidden;
+            margin-right: 5%;
+            height: 70px;
+            display: block;
+        }
+        .app-main-product-card .app-main-product-info-box div:first-child{
+            width: 100%;
+            height: 40px;
+            line-height: 50px;
+            display: flex;
+            font-size: 1.2em;
+            text-align: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            /*align-content: center;*/
+            font-weight: bolder;
+        }
+        .app-main-product-card .app-main-product-info-box div:last-child{
+            width: 100%;
+            height: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            line-height: 20px;
+            justify-content: center;
+            /*align-content: center;*/
+        }
+        .category-body{
+            width: 100%;
+            height: 60px;
+            display: block;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        }
+
+        .category-body:hover{
+            cursor: pointer;
+            transform: scale(.9,.9);
+            transition: .1s ease-in-out;
+        }
+
+        .category-body div:first-child{
+            width: 10%;
+            float: left;
+            height: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+        .category-body div:last-child{
+            width: 90%;
+            float: left;
+            height: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+        }
+
+        .modal-wrapper{
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            transition: .1s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .modal-container{
+            background-color: white;
+            position: fixed;
+            top: 10%;
+            left: 30%;
+            padding: 20px;
+            width: 40%;
+            transition: .1s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(.8,.8);
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+        .modal-container .my-modal-header{
+            width: 100%;
+            height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-size: 1.3em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+            font-weight: bolder;
+            text-transform: uppercase;
+        }
+        .modal-container .modal-body{
+            width: 100%;
+            min-height: 200px;
+            display: block;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+        }
+        .app-footer{
+            width: 100%;
+            height: 200px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-size: 1.3em;
+            background-color: #f2f2f2;
+            border-top: 1px solid rgba(255, 9, 65, 0.38);
+        }
+        .image-upload{
+            width: 100%;
+            height: 150px;
+            display: block;
+        }
+        .image-upload img{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .full-product-modal{
+            width: 35%;
+            min-height: 500px;
+            display: block;
+            position: fixed;
+            top: 5%;
+            left: 32.5%;
+            background-color: #fff;
+            transform: scale(.5,.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: .1s ease-in-out;
+        }
+        .full-product-modal .full-product-modal-header{
+            width: 100%;
+            height: 50px;
+            display: flex;
+            text-transform: uppercase;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            font-weight: bolder;
+            color: #b30816;
+        }
+        .full-product-modal .full-product-modal-body{
+            width: 100%;
+            height: 500px;
+            display: block;
+        }
+        .full-product-modal .full-product-modal-body div:first-child{
+            width: 100%;
+            height: 300px;
+            display: block;
+        }
+        .full-product-modal .full-product-modal-body div:first-child img{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .full-product-modal .full-product-modal-body div:nth-child(2){
+            width: 100%;
+            min-height: 66px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+        }
+        .full-product-modal .full-product-modal-body div:nth-child(3){
+            width: 100%;
+            height: 66px;
+            font-weight: bolder;
+            font-size: 1.4em;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+        }
+        .full-product-modal .full-product-modal-body div:last-child{
+            width: 100%;
+            height: 66px;
+            font-weight: bold;
+            font-size: 1.2em;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+        }
+        .full-product-modal-footer{
+            width: 100%;
+            height: 50px;
+            display: block;
+            text-align: center;
+        }
+        .full-product-modal-footer button{
+            border-radius: unset !important;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="app">
+    <div class="app-header">
+        <div class="app-container">
+            <div class="app-logo-section appText">
+                <span class="fa fa-shopping-basket #28a745 mr-2 appText"></span><br/> Market Place
+            </div>
+
+            <div class="app-info-section">
+                <div class="app-info-top">
+                    <div class="app-info-top-section">
+                        <span class="fa fa-search"></span>
+                        <div class="input-group">
+                            <input class="form-control form-control-lg searchProducts" placeholder="Search Products...">
+                            <button class="btn btn-success">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    <div class="app-info-top-section">
+                        <div>
+                            <span class="fa fa-phone appText mr-2"></span> +265 000 000 000
+                        </div>
+                        <div>
+                             Call Us for Free
+                        </div>
+                    </div>
+
+                    <div class="app-info-top-section">
+                        <div>
+                            <span class="fa fa-shi appText mr-2"></span>  FREE SHIPPING
+                        </div>
+                        <div>
+                            On Order Over 1$
+                        </div>
+                    </div>
+                </div>
+                <div class="app-info-bottom">
+                    <ul>
+                        <li>Home</li>
+                        <li class="postProduct">Post Product</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-main-body">
+        <div class="app-container">
+            <div class="app-main-body-section">
+                <div class="app-main-body-header">
+                    <div>
+                        <span class="fa fa-shopping-cart"></span>
+                    </div>
+                    <div>
+                        Today's Pick
+                    </div>
+                </div>
+                <div class="app-main-body-body displayProducts">
+
+                </div>
+            </div>
+            <div class="app-main-body-section">
+                <div class="app-main-body-header">
+                    <div>
+                        <span class="fa fa-bars"></span>
+                    </div>
+                    <div>
+                        Categories
+                    </div>
+                </div>
+                <div class="app-main-body-body displayCategories">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-footer">
+        Market place 2023. All rights reserved
+    </div>
+</div>
+
+<div class="modal-wrapper">
+
+</div>
+
+<div class="modal-container">
+    <div class="my-modal-header">
+        Post Product
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <label>Attach a product image</label>
+                <div class="image-upload" onclick="$('.file').click();">
+                    <img src="https://www.jennybeaumont.com/wp-content/uploads/2015/03/placeholder.gif">
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label>Name</label>
+                        <input class="form-control productName" placeholder="Enter Product Name">
+                    </div>
+                    <div class="col-4">
+                        <label>Price</label>
+                        <input class="form-control productPrice" placeholder="Enter Product Price">
+                    </div>
+                    <div class="col-4">
+                        <label>Choose Category</label>
+                        <select class="form-control chooseCategory productCategory">
+
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label>Description</label>
+                        <textarea class="form-control productDescription" placeholder="Product Description"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label>Phone Number</label>
+                        <input class="form-control productContact" placeholder="265...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mt-3">
+            <button class="btn btn-primary uploadNewProduct">
+                <span class="fa fa-check"></span>
+                Save
+            </button>
+            <button class="btn btn-danger closeMOdal">
+                <span class="fa fa-close"></span>
+                close
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="full-product-modal">
+    <div class="full-product-modal-header fullName">
+
+    </div>
+    <div class="full-product-modal-body">
+        <div>
+            <img src="" class="fullImage">
+        </div>
+        <div class="fullDescription">
+
+        </div>
+        <div class="fullPrice">
+
+        </div>
+        <div>
+            Contact : <span class="fullContact"></span>
+        </div>
+    </div>
+    <div class="full-product-modal-footer">
+        <button class="btn btn-success closeMOdal">
+            Close
+        </button>
+    </div>
+</div>
+
+<categoryTemplate style="display: none">
+    <div class="category-body" id="{categoryId}">
+        <div>
+            <span class="fa fa-arrow-right"></span>
+        </div>
+        <div>
+            {categoryName}
+        </div>
+    </div>
+</categoryTemplate>
+
+<productHeaderCategory style="display: none">
+    <div class="app-main-body-info-caption">
+        {productCategory}
+    </div>
+</productHeaderCategory>
+
+<displayProductsTemplates style="display: none">
+    <div class="app-main-product-card"
+         caption="{productCaption}"
+         image ="{productImage}"
+         name = "{productName}"
+         price = "{productPrice}"
+         contact="{contact}">
+        <div class="app-main-product-image">
+            <img src="{productImage}">
+        </div>
+        <div class="app-main-product-info-box">
+            <div>
+                {productPrice}
+            </div>
+            <div>
+                {productName}
+            </div>
+        </div>
+    </div>
+</displayProductsTemplates>
+
+<input type="file" style="display: none" class="file">
+<script>
+    class marketPlace{
+
+        products = [
+            {name:"shoes",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:1,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'},
+            {name:"Fridge",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:2,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'},
+            {name:"shoes",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:1,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'},
+            {name:"shoes",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:3,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'},
+            {name:"shoes",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:3,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'},
+            {name:"shoes",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:3,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'},
+            {name:"shoes",price:"MWK2,000.00","contact":265881102326,description:"Good Quality Shoes",categoryId:1,image:'https://alinafe.com/assets/images/1fa4721e29ab1f04bd799704b3966010.png'}
+        ];
+
+        categories = [
+            {category: "Clothing and Accessories", id: 1},
+            {category: "Electronics", id: 2},
+            {category: "Home and Garden", id: 3},
+            {category: "Health and Beauty", id: 4},
+            {category: "Toys and Games", id: 5},
+            {category: "Sporting Goods", id: 6},
+            {category: "Books and Media", id: 7},
+            {category: "Jewelry and Watches", id: 8},
+            {category: "Automotive", id: 9},
+            {category: "Food and Beverages", id: 10}
+        ];
+
+        constructor() {
+
+        }
+
+        async saveNewProduct(obj){
+            let product = this.products.reverse().push(obj);
+            this.products.reverse();
+            this.displayProducts();
+            return true;
+        }
+
+        displayProducts(search,searchCategoryId){
+
+            let categories = this.categories;
+            let products   = this.products;
+            let productsPerCategory = [];
+
+            if (categories.length){
+
+                categories.forEach(({category,id})=>{
+                    let data = {categoryName:category,id,products:[]};
+                    if (products.length){
+                        products.forEach((item)=>{
+                            let productCategoryId = item.categoryId;
+                            if (!search && !searchCategoryId){
+                                if (productCategoryId == id){
+                                    data.products.push(item);
+                                }
+                            }else if (search){
+                                if (productCategoryId == id){
+                                    if (item.name.trim().toLowerCase().startsWith(search.trim().toLowerCase())){
+                                        data.products.push(item);
+                                    }
+                                }
+                            }else if (searchCategoryId){
+                                if ((searchCategoryId == id) && (productCategoryId == id)){
+                                    data.products.push(item);
+                                }
+                            }
+                        });
+                    }
+                    productsPerCategory.push(data);
+                });
+            }
+            if (productsPerCategory.length){
+                let td = "";
+                productsPerCategory.forEach((item)=>{
+
+                   let headingTemplate = $('productHeaderCategory').html();
+
+                   let products = item.products;
+
+                   if (products.length){
+                       td += headingTemplate.replace('{productCategory}',item.categoryName);
+                       products.forEach((item)=>{
+                           let productsTemplate = $('displayProductsTemplates').html();
+                           td += productsTemplate.split('{productImage}').join(item.image)
+                               .split('{productPrice}').join(item.price)
+                               .split('{productName}').join(item.name).split('{contact}').join(item.contact)
+                               .split('{productCaption}').join(item.description);
+                       });
+
+                   }else{
+                       if (searchCategoryId == item.id){
+                           td += headingTemplate.replace('{productCategory}',item.categoryName);
+                           td += "<div class='alert alert-info' style='width: 100%'>No products from this category</div>";
+                       }
+                       if (!search && !searchCategoryId){
+                           td += "<div class='alert alert-info' style='width: 100%'>No products from this category</div>";
+                       }
+                   }
+                });
+                if (td){
+                    $('.displayProducts').html(td);
+                } else{
+                    $('.displayProducts').html('<div class="alert alert-info" style="width: 100%">No Match Results Found</div>');
+                }
+                // setTimeout(()=>{
+                //     let ht =  $('body').find('.displayProducts .app-main-product-card').html();
+                //     alert(ht);
+                // },500);
+            }
+        }
+
+        displayCategories(){
+
+            if(this.categories.length){
+                let td = $('categoryTemplate').html().replace('{categoryName}',"All Categories").replace('{categoryId}',"");
+
+                let options = '<option value="">Select Category</option>';
+                this.categories.forEach((item)=>{
+                   let template = $('categoryTemplate').html();
+                   td += template.replace('{categoryName}',item.category).replace('{categoryId}',item.id);
+                    options += `<option value='${item.id}'>${item.category}</option>`;
+                });
+                $('.displayCategories').html(td);
+                $('.chooseCategory').html(options);
+            }
+        }
+    }
+
+    let market = new marketPlace();
+    market.displayCategories();
+    market.displayProducts();
+
+    $(function () {
+
+        $('.displayCategories .category-body').on('click',function () {
+            let categoryId = $(this).attr('id');
+            if (categoryId){
+                market.displayProducts(false,categoryId);
+            }else{
+                market.displayProducts();
+            }
+        });
+
+        $('.uploadNewProduct').click(async function () {
+
+            let image = $('.image-upload').attr('string');
+            let productName = $('.productName').val();
+            let productPrice = $('.productPrice').val();
+            let productCategory = $('.productCategory').val();
+            let productDescription = $('.productDescription').val();
+            let contact        = $('.productContact').val();
+
+            if (!image) return alert("Please attach product image");
+            if (!productName) return alert("Please provide product name");
+            if (!productPrice) return alert("Please provide product price");
+            if (!productCategory) return alert("Please select product category");
+            if (!contact) return alert("Please provide your contact number");
+
+            await market.saveNewProduct({
+                categoryId:productCategory,
+                image,name:productName,
+                price:productPrice,
+                description:productDescription,
+                contact
+            });
+
+            alert("Product has been posted successfully");
+
+            $('.closeMOdal').click();
+            $('.image-upload').attr('string','');
+            $('.image-upload').find('img').attr('src','https://www.jennybeaumont.com/wp-content/uploads/2015/03/placeholder.gif');
+            $('.productName').val("");
+            $('.productPrice').val("");
+            $('.productCategory').val("");
+            $('.productDescription').val("");
+            $('.productContact').val("");
+
+        });
+
+        $('.searchProducts').keyup(function () {
+            let value = $(this).val();
+            if (value){
+                market.displayProducts(value);
+            }else{
+                market.displayProducts();
+            }
+        });
+
+        $('.file').on('change',function () {
+            let file = document.querySelector('.file').files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                $('.image-upload').attr('string',reader.result);
+                $('.image-upload').find('img').attr('src',reader.result);
+            }
+        });
+
+        $('.postProduct').on('click',function () {
+            $('.modal-wrapper').css({
+                opacity:1,
+                visibility:'visible'
+            }).after(()=>{
+                $('.modal-container').css({
+                    opacity:1,
+                    visibility:'visible',
+                    transform:'scale(1,1)'
+                })
+            })
+        });
+
+        $('.closeMOdal').click(function () {
+            $('.modal-wrapper').css({
+                opacity:0,
+                visibility:'hidden'
+            }).after(()=>{
+                $('.modal-container').css({
+                    opacity:0,
+                    visibility:'hidden',
+                    transform:'scale(.8,.8)'
+                })
+            })
+        });
+
+
+        $('body').find('.displayProducts .app-main-product-card').on('click',function () {
+            let $obj = $(this);
+            let description = $obj.attr('caption');
+            let name        = $obj.attr('name');
+            let price       = $obj.attr('price');
+            let image       = $obj.attr('image');
+            let contact     = $obj.attr('contact');
+
+            $('.fullName').text(name);
+            $('.fullContact').text(contact);
+            $('.fullDescription').text(description);
+            $('.fullPrice').text(price);
+            $('.fullImage').attr('src',image);
+
+
+            $('.modal-wrapper').css({
+                opacity:1,
+                visibility:'visible'
+            }).after(()=>{
+                $('.full-product-modal').css({
+                    opacity:1,
+                    visibility:'visible',
+                    transform:'scale(1,1)'
+                })
+            })
+        });
+
+        $('.closeMOdal').click(function () {
+            $('.modal-wrapper').css({
+                opacity:0,
+                visibility:'hidden'
+            }).after(()=>{
+                $('.full-product-modal').css({
+                    opacity:0,
+                    visibility:'hidden',
+                    transform:'scale(.5,.5)'
+                })
+            })
+        });
+    });
+</script>
+</body>
